@@ -1,10 +1,20 @@
+# training
+# A neural network implemented in PyTorch.
+# At least one other Scikit-learn algorithm (for example, K-NN, SVM, Random Forest, Logistic Regression, etc.).
 import pandas as pd
 import numpy as np
 from sklearn import neighbors
+import nltk #INSTALAR
+nltk.download('stopwords', quiet=True)
+from nltk.corpus import stopwords as sw
+from unidecode import unidecode #INSTALAR
+import unicodedata
+import re
 
 from collections import Counter
 import matplotlib.pyplot as plt
-from wordcloud import STOPWORDS, WordCloud # INSTALAR
+from wordcloud import STOPWORDS, WordCloud #INSTALAR
+
 
 traindata = pd.read_csv('Datasets/EvaluationData/politicES_phase_2_train_public.csv', header=0)
 
@@ -68,9 +78,33 @@ print(f"  Maximum length: {text_lengths.max()}")
 print(f"  Average length: {text_lengths.mean():.2f}")
 print(f"  Median length: {text_lengths.median()}")
 
+
+def preserve_letters(text: str, letters: list) -> str:
+    # marca temporal para no perder la ñ/Ñ
+    placeholders = {letter: f"__PLACEHOLDER_{i}__" for i, letter in enumerate(letters)}
+    for k, v in placeholders.items():
+        text = text.replace(k, v)
+    # normalizar y quitar diacríticos
+    text = unicodedata.normalize('NFKD', text)
+    text = ''.join(ch for ch in text if not unicodedata.combining(ch))
+    # restaurar placeholders a ñ/Ñ
+    for k, v in placeholders.items():
+        text = text.replace(v, k)
+    return text
+
 # Print most frequent words in the tweets, word cloud and examples by class
 all_text = ' '.join(ytrain.iloc[:, -1].dropna().astype(str).tolist())
 words = all_text.lower().split()
+# Remove punctuation from words
+tokens = preserve_letters(all_text.lower(), ['ñ', 'Ñ'])
+# To remove anything but words (letters, numbers, and underscore)
+words = re.findall(r"(?<!\S)[A-Za-z]\w*", tokens, flags=re.UNICODE)
+# Get Spanish stopwords from nltk
+spanish_sw = set(sw.words('spanish'))
+extras = {'rt', 'https', 'http', 'jaja', 'jajaja', 'jajajaja', 'jajajajaja', 'mas', 'hace'}
+stopwords = spanish_sw.union(extras)
+
+clean_words = [w for w in words if len(w) > 2 and w not in stopwords]
 
 word_counts = Counter(words)
 most_common_words = word_counts.most_common(10)
@@ -78,29 +112,6 @@ print("Most common words in tweets:")
 for word, count in most_common_words:
     print(f"  '{word}': {count} occurrences")
 
-# Remove very short tokens and common noise
-stopwords = {
-    'de', 'la', 'que', 'el', 'en', 'y', 'a', 'los', 'se', 'del', 'las', 'un',
-    'por', 'con', 'no', 'una', 'su', 'para', 'es', 'al', 'lo', 'como', 'más',
-    'o', 'pero', 'sus', 'le', 'ya', 'o', 'si', 'sobre', 'este', 'también',
-    'me', 'hasta', 'hay', 'donde', 'han', 'tu', 'te', 'rt', 'https', '[hashtag]',
-    '[politician]', '[political_party]', 'esta', 'está', 'qué', 'hoy', 'nos', 
-    'todo', 'son', 'muy', 'sin', 'desde', 'cuando', 'todo', 'todos', 'toda',
-    'todas', 'uno', 'una', 'unos', 'unas', 'ser', 'fue', 'fueron', 'será', 
-    'serán', 'tener', 'tiene', 'tienen', 'hacer', 'hace', 'hacen', 'porque', 
-    'eso', 'esto', 'ese', 'esa', 'esos', 'esas', 'mi', 'mis', 'tu', 'tus',
-    'su', 'sus', 'nuestro', 'nuestra', 'nuestros', 'nuestras', 'les', 'ello',
-    'tan', 'sino', 'estos', 'estas', 'durante', 'contra', 'entre', 'así', 'más',
-    'menos', 'cada', 'poco', 'muy', 'mucho', 'muchos', 'muchas', 'ella', 'era'
-}
-
-clean_words = [
-    w for w in words
-    if len(w) > 2
-    and not w.startswith('@')    # remove mentions
-    and not w.startswith('http') # remove URLs
-    and w not in stopwords
-]
 
 word_counts = Counter(clean_words)
 most_common_words = word_counts.most_common(10)
@@ -110,8 +121,7 @@ for word, count in most_common_words:
     print(f"  '{word}': {count} occurrences")
 
 
-
-wc_stopwords = STOPWORDS.union(stopwords).union({'https', 'rt'})
+wc_stopwords = STOPWORDS.union(stopwords)
 clean_text = ' '.join(clean_words)
 
 wordcloud = WordCloud(
@@ -127,4 +137,3 @@ plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis('off')
 plt.title('Word Cloud of Tweets (cleaned)')
 plt.show()
-
