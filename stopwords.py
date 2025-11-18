@@ -1,3 +1,5 @@
+import nltk #INSTALAR
+nltk.download('stopwords', quiet=True)
 from nltk.corpus import stopwords as sw
 
 spanish_sw = set(sw.words('spanish'))

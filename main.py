@@ -4,16 +4,17 @@
 import pandas as pd
 import numpy as np
 from sklearn import neighbors
-import nltk #INSTALAR
-nltk.download('stopwords', quiet=True)
-from nltk.corpus import stopwords as sw
 from unidecode import unidecode #INSTALAR
 import unicodedata
 import re
 from stopwords import stopwords
 from collections import Counter
 import matplotlib.pyplot as plt
-from wordcloud import STOPWORDS, WordCloud #INSTALAR
+from wordcloud import WordCloud #INSTALAR
+from spellchecker import SpellChecker
+
+
+from nltk.corpus import stopwords as sw
 
 
 traindata = pd.read_csv('Datasets/EvaluationData/politicES_phase_2_train_public.csv', header=0)
@@ -114,6 +115,8 @@ print("Most common words in tweets:")
 for word, count in most_common_words:
     print(f"  '{word}': {count} occurrences")
 
+rare_symbols = [w for w in clean_words if re.search(r"[.,;:!?]", w)]
+
 
 word_counts = Counter(clean_words)
 most_common_words = word_counts.most_common(10)
@@ -123,14 +126,13 @@ for word, count in most_common_words:
     print(f"  '{word}': {count} occurrences")
 
 
-wc_stopwords = STOPWORDS.union(stopwords)
 clean_text = ' '.join(clean_words)
 
 wordcloud = WordCloud(
     width=800,
     height=400,
     background_color='white',
-    stopwords=wc_stopwords,
+    stopwords=stopwords,
     collocations=False  # avoid duplicated bigrams like "new york"
 ).generate(clean_text)
 
@@ -139,3 +141,4 @@ plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis('off')
 plt.title('Word Cloud of Tweets (cleaned)')
 plt.show()
+
