@@ -10,7 +10,7 @@ from nltk.corpus import stopwords as sw
 from unidecode import unidecode #INSTALAR
 import unicodedata
 import re
-
+from stopwords import stopwords
 from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import STOPWORDS, WordCloud #INSTALAR
@@ -99,14 +99,16 @@ words = all_text.lower().split()
 tokens = preserve_letters(all_text.lower(), ['ñ', 'Ñ'])
 # To remove anything but words (letters, numbers, and underscore)
 words = re.findall(r"(?<!\S)[A-Za-z]\w*", tokens, flags=re.UNICODE)
-# Get Spanish stopwords from nltk
-spanish_sw = set(sw.words('spanish'))
-extras = {'rt', 'https', 'http', 'jaja', 'jajaja', 'jajajaja', 'jajajajaja', 'mas', 'hace'}
-stopwords = spanish_sw.union(extras)
 
 clean_words = [w for w in words if len(w) > 2 and w not in stopwords]
 
-word_counts = Counter(words)
+unique_clean_words = set(clean_words)
+print("Número total de palabras únicas (sin stopwords):", len(unique_clean_words))
+
+print(len(clean_words))
+
+
+word_counts = Counter(clean_words)
 most_common_words = word_counts.most_common(10)
 print("Most common words in tweets:")
 for word, count in most_common_words:

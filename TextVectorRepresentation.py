@@ -2,8 +2,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from stopwords import stopwords
 from main import ytrain
 
-
-
 tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
 
 vectorizer = TfidfVectorizer(
