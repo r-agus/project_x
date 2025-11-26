@@ -96,7 +96,6 @@ def generate_wordcloud(ytrain: pd.DataFrame):
 
     print(len(clean_words))
 
-
     word_counts = Counter(clean_words)
     most_common_words = word_counts.most_common(10)
     print("Most common words in tweets:")
@@ -104,12 +103,11 @@ def generate_wordcloud(ytrain: pd.DataFrame):
         print(f"  '{word}': {count} occurrences")
 
     word_counts = Counter(clean_words)
-    most_common_words = word_counts.most_common(10)
+    most_common_words = word_counts.most_common(100)
 
     print("Most common words in tweets (cleaned):")
     for word, count in most_common_words:
         print(f"  '{word}': {count} occurrences")
-
 
     clean_text = ' '.join(clean_words)
 
@@ -118,7 +116,8 @@ def generate_wordcloud(ytrain: pd.DataFrame):
         height=400,
         background_color='white',
         stopwords=stopwords,
-        collocations=False  # avoid duplicated bigrams like "new york"
+        collocations=False,  # avoid duplicated bigrams like "new york"
+        normalize_plurals=False
     ).generate(clean_text)
 
     plt.figure(figsize=(10, 5))
@@ -126,6 +125,7 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     plt.axis('off')
     plt.title('Word Cloud of Tweets (cleaned)')
     plt.show()
+    return wordcloud
 
 if __name__ == "__main__":
     traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
@@ -142,5 +142,7 @@ if __name__ == "__main__":
     print(f"  Average length: {text_lengths.mean():.2f}")
     print(f"  Median length: {text_lengths.median()}")
     print(f"{'-' * 35}")
-    generate_wordcloud(ytrain)
+    wordcloud = generate_wordcloud(ytrain)
+    wordcloud.to_file("wordcloud.png")
+
 

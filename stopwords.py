@@ -1,14 +1,28 @@
-stopwords = {
-    'de', 'la', 'que', 'el', 'en', 'y', 'a', 'los', 'se', 'del', 'las', 'un',
-    'por', 'con', 'no', 'una', 'su', 'para', 'es', 'al', 'lo', 'como', 'más',
-    'o', 'pero', 'sus', 'le', 'ya', 'o', 'si', 'sobre', 'este', 'también',
-    'me', 'hasta', 'hay', 'donde', 'han', 'tu', 'te', 'rt', 'https', '[hashtag]',
-    '[politician]', '[political_party]', 'esta', 'está', 'qué', 'hoy', 'nos', 
-    'todo', 'son', 'muy', 'sin', 'desde', 'cuando', 'todo', 'todos', 'toda',
-    'todas', 'uno', 'una', 'unos', 'unas', 'ser', 'fue', 'fueron', 'será', 
-    'serán', 'tener', 'tiene', 'tienen', 'hacer', 'hace', 'hacen', 'porque', 
-    'eso', 'esto', 'ese', 'esa', 'esos', 'esas', 'mi', 'mis', 'tu', 'tus',
-    'su', 'sus', 'nuestro', 'nuestra', 'nuestros', 'nuestras', 'les', 'ello',
-    'tan', 'sino', 'estos', 'estas', 'durante', 'contra', 'entre', 'así', 'más',
-    'menos', 'cada', 'poco', 'muy', 'mucho', 'muchos', 'muchas', 'ella', 'era'
+import functools
+
+import nltk  # INSTALAR
+from nltk.corpus import stopwords as sw
+
+_EXTRAS = {
+    'rt', 'https', 'http',
+    'jaja', 'jajaja', 'jajajaja', 'jajajajaja',
+    'mas', 'hace',
 }
+
+def _load_spanish_stopwords() -> set[str]:
+    """Return the base Spanish stopwords set, downloading resources if needed."""
+    try:
+        return set(sw.words('spanish'))
+    except LookupError:
+        nltk.download('stopwords', quiet=True)
+        return set(sw.words('spanish'))
+
+
+@functools.lru_cache(maxsize=1)
+def get_stopwords() -> set[str]:
+    """Return the reusable stopwords set (base + extras)."""
+    return _load_spanish_stopwords().union(_EXTRAS)
+
+
+# Keep a module-level constant for convenient imports, but populate lazily once.
+stopwords = get_stopwords()
