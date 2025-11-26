@@ -42,3 +42,8 @@ tweet_embeddings = torch.mean(token_embeddings, dim=1)  # shape: (n_tweets, 768)
 for i, emb in enumerate(tweet_embeddings):
     print(f"Tweet {i}: embedding shape {emb.shape}")
     print(emb[:10])  
+
+print(token_embeddings)
+print(tweet_embeddings)
+
+tweet_embeddings = torch.mean(token_embeddings, dim=1)
