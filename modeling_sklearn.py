@@ -25,7 +25,7 @@ def load_and_split(data_path, text_col=TEXT_COL, target_col=TARGET_COL,
 
     X = df[text_col].astype(str)
     y = df[target_col]
-    #Now we split the data into train, val and test 
+    # Now we split the data into train, val and test 
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=(test_size + val_size), stratify=y, random_state=random_state)
 
     # Now X_temp and y_temp contain both val and test data, we need to split them again to get val and test sets
@@ -65,10 +65,10 @@ def build_tfidf(X_train, X_val, X_test):
 
 def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test, y_test):
 
-    # We create the model - Logistic Regression
+    # We create the model
     if model_type == "logreg":
         print("\nTraining Logistic Regression...")
-        model = LogisticRegression(max_iter=2000, n_jobs=-1,class_weight="balanced")
+        model = LogisticRegression(max_iter=2000, n_jobs=-1, class_weight="balanced")
 
     elif model_type == "svm":
         print("\nTraining Linear SVM...")
@@ -145,7 +145,7 @@ def run_model_experiment(model_type, target_col, exp_name):
         X_train, X_val, X_test
     )
 
-    # Train and evaluate Logistic Regression
+    # Train and evaluate the model
     model, acc, f1 = train_and_evaluate_model(model_type, X_train_tfidf, y_train_enc, X_val_tfidf, y_val_enc, X_test_tfidf, y_test_enc)
 
     return model, encoder, vectorizer, acc, f1
