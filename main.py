@@ -95,9 +95,13 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     print("Número total de palabras únicas (sin stopwords):", len(unique_clean_words))
 
     print(len(clean_words))
+    print(len(unique_clean_words))
 
     word_counts = Counter(clean_words)
     most_common_words = word_counts.most_common(10)
+    df_most_common = pd.DataFrame(most_common_words, columns=['word', 'count'])
+    # Guardar a CSV
+    df_most_common.to_csv("gitignore/most_common_words.csv", index=False)
     print("Most common words in tweets:")
     for word, count in most_common_words:
         print(f"  '{word}': {count} occurrences")
@@ -143,6 +147,6 @@ if __name__ == "__main__":
     print(f"  Median length: {text_lengths.median()}")
     print(f"{'-' * 35}")
     wordcloud = generate_wordcloud(ytrain)
-    wordcloud.to_file("wordcloud.png")
+    wordcloud.to_file(".gitignore/wordcloud.png")
 
 
