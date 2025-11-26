@@ -154,25 +154,25 @@ results = []
 if __name__ == "__main__":
 
     # LOGISTIC REGRESSION - BINARY
-    m, e, v, acc, f1 = run_model_experiment(
+    model, encoder, vectorizer, acc, f1 = run_model_experiment(
         "logreg", "ideology_binary", "Binary classification"
     )
     results.append(["Logistic Regression", "Binary", acc, f1])
 
     # LOGISTIC REGRESSION - MULTICLASS
-    m, e, v, acc, f1 = run_model_experiment(
+    model, encoder, vectorizer, acc, f1 = run_model_experiment(
         "logreg", "ideology_multiclass", "Multiclass classification"
     )
     results.append(["Logistic Regression", "Multiclass", acc, f1])
 
     # SVM - BINARY
-    m, e, v, acc, f1 = run_model_experiment(
+    model, encoder, vectorizer, acc, f1 = run_model_experiment(
         "svm", "ideology_binary", "Binary classification"
     )
     results.append(["SVM", "Binary", acc, f1])
 
     # SVM - MULTICLASS
-    m, e, v, acc, f1 = run_model_experiment(
+    model, encoder, vectorizer, acc, f1 = run_model_experiment(
         "svm", "ideology_multiclass", "Multiclass classification"
     )
     results.append(["SVM", "Multiclass", acc, f1])
