@@ -128,6 +128,21 @@ def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test,
 
 
 def run_model_experiment(model_type, target_col, exp_name):
+    """
+    Runs a model experiment by training and evaluating a specified model type on the given target column.
+
+    Parameters:
+        model_type (str): The type of model to train ('logreg' for Logistic Regression, 'svm' for Support Vector Machine).
+        target_col (str): The name of the target column in the dataset.
+        exp_name (str): A descriptive name for the experiment.
+
+    Returns:
+        model: The trained model instance.
+        encoder: The label encoder used for target labels.
+        vectorizer: The TF-IDF vectorizer used for text features.
+        acc (float): Accuracy score on the test set.
+        f1 (float): Macro-averaged F1 score on the test set.
+    """
     print(f"\n{model_type.upper()} EXPERIMENT: {exp_name}")
 
     # Load and split the data
