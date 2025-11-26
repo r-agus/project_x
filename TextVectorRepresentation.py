@@ -1,49 +1,100 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from stopwords import stopwords
-from main import ytrain
-
-tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
-
-vectorizer = TfidfVectorizer(
-    max_features=5000,     
-    stop_words=list(stopwords),  
-    ngram_range=(1,2)      
-)
-
-X_tfidf = vectorizer.fit_transform(tweets)
-
-print("Shape de la matriz TF-IDF:", X_tfidf)
-
-
+import pandas as pd
+import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
 
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
-model = BertModel.from_pretrained('bert-base-multilingual-cased')
+ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
+
+def vectorRepresention_TFIDF(ytrain):
+    '''
+    Function to obtain TF-IDF embeddings for tweets in any ytrain.
+    '''
+    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    vectorizer = TfidfVectorizer(
+        max_features=5000,     
+        stop_words=list(stopwords),  
+        ngram_range=(1,2)      
+    )
+
+    X_tfidf = vectorizer.fit_transform(tweets)
+
+    return X_tfidf, vectorizer
+
+def vectorRepresentation_BERT(ytrain):
+    '''
+    Function to obtain BERT embeddings for tweets in any ytrain.
+    '''
+    # Obtain tweets
+    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    
+    # Load BERT model and tokenizer
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased') # BERT tokenizer
+    model = BertModel.from_pretrained('bert-base-multilingual-cased') # BERT model
+
+    # Tokenize and encode tweets
+    inputs = tokenizer(
+        tweets[:20],
+        return_tensors="pt",
+        padding=True,   
+        truncation=True,
+        max_length=64
+    )
+    
+    # # Debugging example for BERT tokenization
+    # example = "El gobierno del PSOE está trabajando en economía."
+    # tokens_example = tokenizer.tokenize(example)
+    # print(tokens_example)
+    
+    
+    # Get BERT embeddings
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Get the token embeddings from the last hidden state
+    token_embeddings = outputs.last_hidden_state 
+    tweet_embeddings = torch.mean(token_embeddings, dim=1)
+    
+    # For debugging
+    # for i, emb in enumerate(tweet_embeddings):
+    #     print(f"Tweet {i}: embedding shape {emb.shape}")
+    #     print(emb[:10])  
+    
+    return tweet_embeddings
+
+x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+x_BERT = vectorRepresentation_BERT(ytrain)
+
+print("Shape de la matriz TF-IDF:", x_tfidf.shape)
+print("Shape de la matriz BERT:", x_BERT.shape)
 
 
-inputs = tokenizer(
-    tweets[:30],
-    return_tensors="pt",
-    padding=True,        # rellena hasta la misma longitud
-    truncation=True,     # corta si son demasiado largos
-    max_length=64        # límite de tokens por tweet (ajústalo según necesidad)
-)
 
 
-with torch.no_grad():
-    outputs = model(**inputs)
 
-token_embeddings = outputs.last_hidden_state   
+# inputs = tokenizer(
+#     tweets[:30],
+#     return_tensors="pt",
+#     padding=True,        # rellena hasta la misma longitud
+#     truncation=True,     # corta si son demasiado largos
+#     max_length=64        # límite de tokens por tweet (ajústalo según necesidad)
+# )
 
-tweet_embeddings = torch.mean(token_embeddings, dim=1)  # shape: (n_tweets, 768)
 
-for i, emb in enumerate(tweet_embeddings):
-    print(f"Tweet {i}: embedding shape {emb.shape}")
-    print(emb[:10])  
+# with torch.no_grad():
+#     outputs = model(**inputs)
 
-print(token_embeddings)
-print(tweet_embeddings)
+# token_embeddings = outputs.last_hidden_state   
 
-tweet_embeddings = torch.mean(token_embeddings, dim=1)
+# tweet_embeddings = torch.mean(token_embeddings, dim=1)  # shape: (n_tweets, 768)
+
+# for i, emb in enumerate(tweet_embeddings):
+#     print(f"Tweet {i}: embedding shape {emb.shape}")
+#     print(emb[:10])  
+
+# print(token_embeddings)
+# print(tweet_embeddings)
+
+# tweet_embeddings = torch.mean(token_embeddings, dim=1)
