@@ -104,10 +104,6 @@ def generate_wordcloud(ytrain: pd.DataFrame):
 
     word_counts = Counter(clean_words)
     most_common_words = word_counts.most_common(100)
-    df_most_common = pd.DataFrame(most_common_words, columns=['word', 'count'])
-
-# Guardar a CSV
-    df_most_common.to_csv("most_common_words.csv", index=False)
 
     print("Most common words in tweets (cleaned):")
     for word, count in most_common_words:
