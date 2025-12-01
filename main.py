@@ -11,7 +11,6 @@ from stopwords import stopwords
 from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-from spellchecker import SpellChecker
 from nltk.corpus import stopwords as sw
 
 from stopwords import stopwords
