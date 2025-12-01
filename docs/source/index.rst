@@ -10,8 +10,32 @@ Add your content using ``reStructuredText`` syntax. See the
 `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
 documentation for details.
 
+Overview
+--------
+
+This site hosts the developer documentation for Project X.
+
+API reference
+-------------
+
+.. automodule:: main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+.. autosummary::
+   :toctree: _autosummary
+   :caption: Public functions
+   :nosignatures:
+
+   load_data
+   print_data_info
+   analyze_class_distribution
+   preserve_letters
+   generate_wordcloud
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Additional guides
 

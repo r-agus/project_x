@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath("../../")) 
+import os
+import sys
+sys.path.insert(0, os.path.abspath("../../")) 
 
 project = 'Project X'
 copyright = '2025, Alvaro Espinoza Chonlon, Marta Torres Sanchez, Maria de las Mercedes Ramos Santana, Ruben Agustin Gonzalez'
@@ -30,6 +30,22 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
+# Mock optional third-party packages so autodoc can import the project without
+# requiring the full ML stack during docs builds (e.g., on CI).
+autodoc_mock_imports = [
+    "pandas",
+    "numpy",
+    "sklearn",
+    "matplotlib",
+    "wordcloud",
+    "nltk",
+    "unidecode",
+    "torch",
+    "torchvision",
+    "transformers",
+    "regex",
+]
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -41,6 +57,10 @@ typehints_document_rtype = True
 
 # Make compilation strict with references:
 nitpicky = True
+
+nitpick_ignore = [
+    ("py:class", "pd.DataFrame"),
+]
 
 # Inter-sphinx (references to external documentation)
 intersphinx_mapping = {
