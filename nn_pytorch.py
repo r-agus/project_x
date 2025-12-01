@@ -19,7 +19,17 @@ device = torch.accelerator.current_accelerator().type if torch.accelerator.is_av
 print(f"Using {device} device")
 
 class NeuralNetwork(nn.Module):
+    """
+    A feedforward neural network for multi-class classification.
+    """
     def __init__(self):
+        """
+        Initializes the neural network layers.
+        The network consists of:
+        - An input layer that flattens the input tensor.
+        - A sequence of linear layers with ReLU activations.
+        - An output layer with 4 outputs corresponding to the 4 classification tasks.
+        """
         super().__init__()
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
@@ -31,6 +41,13 @@ class NeuralNetwork(nn.Module):
         )
 
     def forward(self, x):
+        """
+        Defines the forward pass of the neural network.
+        Args:
+            x (torch.Tensor): Input tensor.
+        Returns:
+            torch.Tensor: Output logits.
+        """
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
