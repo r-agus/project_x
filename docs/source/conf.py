@@ -30,6 +30,17 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
+# Mock optional third-party packages so autodoc can import the project without
+# requiring the full ML stack during docs builds (e.g., on CI).
+autodoc_mock_imports = [
+    "pandas",
+    "numpy",
+    "sklearn",
+    "matplotlib",
+    "wordcloud",
+    "nltk",
+]
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
