@@ -58,6 +58,10 @@ typehints_document_rtype = True
 # Make compilation strict with references:
 nitpicky = True
 
+nitpick_ignore = [
+    ("py:class", "pd.DataFrame"),
+]
+
 # Inter-sphinx (references to external documentation)
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
