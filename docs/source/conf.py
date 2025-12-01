@@ -39,6 +39,11 @@ autodoc_mock_imports = [
     "matplotlib",
     "wordcloud",
     "nltk",
+    "unidecode",
+    "torch",
+    "torchvision",
+    "transformers",
+    "regex",
 ]
 
 
