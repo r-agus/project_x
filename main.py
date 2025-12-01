@@ -1,6 +1,15 @@
 # training
 # A neural network implemented in PyTorch.
 # At least one other Scikit-learn algorithm (for example, K-NN, SVM, Random Forest, Logistic Regression, etc.).
+
+"""Main module for data loading, exploration, and visualization.
+
+Provides functions to load data, print data information, analyze class distribution,
+preserve specific letters during text normalization, and generate word clouds.
+"""
+
+__all__ = ['load_data', 'print_data_info', 'analyze_class_distribution', 'preserve_letters', 'generate_wordcloud']
+
 import pandas as pd
 import numpy as np
 from sklearn import neighbors
@@ -16,6 +25,16 @@ from nltk.corpus import stopwords as sw
 from stopwords import stopwords
 
 def load_data(file_path: str) -> pd.DataFrame:
+    """Loads the dataset from a CSV file.
+    
+    Main funtion to load the dataset from a CSV file. It assumes the first row contains headers.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        pd.DataFrame: Loaded dataset.
+    """
     data = pd.read_csv(file_path, header=0)
     return data
 
