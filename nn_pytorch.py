@@ -110,7 +110,7 @@ print(model)
 data_loaded = load_data('Datasets/EvaluationData/politicES_phase_2_test_codalab.csv')
 
 # Seleccionar n ejemplos
-n = 100_000
+n = 40_000
 data = data_loaded.sample(n=n, random_state=42)
 
 
