@@ -12,10 +12,25 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from TextVectorRepresentation import tweet_embeddings
-from main import ytrain
 
-device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
+# Defer heavy imports until runtime to allow Sphinx autodoc to work
+tweet_embeddings = None
+ytrain = None
+
+def _load_data():
+    """Load heavy data dependencies at runtime (not at import time)."""
+    global tweet_embeddings, ytrain
+    if tweet_embeddings is None:
+        from TextVectorRepresentation import vectorRepresentation_BERT
+        from main import ytrain as _yt
+        ytrain = _yt
+        tweet_embeddings = vectorRepresentation_BERT(ytrain)
+
+device = (
+    torch.accelerator.current_accelerator().type
+    if torch.accelerator.is_available()
+    else "cpu"
+)
 print(f"Using {device} device")
 
 class NeuralNetwork(nn.Module):
@@ -79,14 +94,16 @@ def map_politicES_labels(y_raw):
 
     return torch.tensor(y_mapped, dtype=torch.long)
 
-X = tweet_embeddings.numpy()
-data = ytrain
-num_columns = data.shape[1]
-y_raw = data.iloc[:, 1:num_columns-1].values  # Labels are all columns except the first (user) and last (tweet text)
+if __name__ == "__main__":
+    _load_data()
+    X = tweet_embeddings.numpy()
+    data = ytrain
+    num_columns = data.shape[1]
+    y_raw = data.iloc[:, 1:num_columns-1].values  # Labels are all columns except the first (user) and last (tweet text)
 
-y = map_politicES_labels(y_raw)
+    y = map_politicES_labels(y_raw)
 
-print("Feature matrix shape:", X.shape)
-print("Labels shape:", y.shape)
+    print("Feature matrix shape:", X.shape)
+    print("Labels shape:", y.shape)
 
 
