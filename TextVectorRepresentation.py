@@ -24,7 +24,7 @@ def vectorRepresentation_TFIDF(xtrain):
 
 def vectorRepresentation_BERT(xtrain):
     '''
-    Function to obtain BERT embeddings for tweets in any ytrain.
+    Function to obtain BERT embeddings for tweets in any xtrain.
     '''
     # Obtain tweets
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
@@ -56,7 +56,6 @@ def vectorRepresentation_BERT(xtrain):
     token_embeddings = outputs.last_hidden_state 
     tweet_embeddings = torch.mean(token_embeddings, dim=1)
 
-    
     # For debugging
     # for i, emb in enumerate(tweet_embeddings):
     #     print(f"Tweet {i}: embedding shape {emb.shape}")
@@ -72,13 +71,14 @@ print("Shape of BERT matrix:  ", x_BERT.shape)
 
 
 def vectorRepresentation_MiniLM(xtrain):
-    # Convert the input to a list of strings (assuming xtrain is a vector or a Pandas Series)
+    """
+    Function to obtain BERT embeddings (MiniLM model) for tweets in any xtrain.
+    """
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
 
-    # Load the MiniLM model
     model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L6-v2')
 
-    # Generate embeddings (output: a numpy array with shape [num_tweets, 384])
+    # (output: a numpy array with shape [num_tweets, 384])
     embeddings = model.encode(tweets, show_progress_bar=True)
     
     return embeddings
