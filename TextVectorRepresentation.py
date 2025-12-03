@@ -64,8 +64,9 @@ def vectorRepresentation_BERT(ytrain):
     
     return tweet_embeddings
 
-x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
-x_BERT = vectorRepresentation_BERT(ytrain)
+if __name__ == "__main__":
+    x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+    x_BERT = vectorRepresentation_BERT(ytrain)
 
-print("Shape of TF-IDF matrix:", x_tfidf.shape)
-print("Shape of BERT matrix:  ", x_BERT.shape)
+    print("Shape of TF-IDF matrix:", x_tfidf.shape)
+    print("Shape of BERT matrix:  ", x_BERT.shape)
