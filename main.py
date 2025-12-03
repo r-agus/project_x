@@ -21,7 +21,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from nltk.corpus import stopwords as sw
-
+from init import xtrain, ytrain, xtest, ytest, xvalidation, yvalidation
 from stopwords import stopwords
 
 
@@ -40,8 +40,8 @@ def load_data(file_path: str) -> pd.DataFrame:
     data = pd.read_csv(file_path, header=0)
     return data
 
-traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
-ytrain = traindata.iloc[:, :]
+# traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
+# ytrain = traindata.iloc[:, :]
 
 def print_data_info(ytrain: pd.DataFrame):
     # Shape of the training data

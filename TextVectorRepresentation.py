@@ -8,7 +8,7 @@ import torch
 
 ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
 
-def vectorRepresention_TFIDF(ytrain):
+def vectorRepresentation_TFIDF(ytrain):
     '''
     Function to obtain TF-IDF embeddings for tweets in any ytrain.
     '''
@@ -64,7 +64,7 @@ def vectorRepresentation_BERT(ytrain):
     
     return tweet_embeddings
 
-x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+x_tfidf, vectorizer = vectorRepresentation_TFIDF(ytrain)
 x_BERT = vectorRepresentation_BERT(ytrain)
 
 print("Shape of TF-IDF matrix:", x_tfidf.shape)
