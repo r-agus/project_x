@@ -28,3 +28,5 @@ ytest = testdata[label_name]
 
 xvalidation = validationdata['tweet']
 yvalidation = validationdata[label_name]
+
+print(xtest.shape)

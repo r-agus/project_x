@@ -4,15 +4,14 @@ import pandas as pd
 import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
+from init import xtrain
+from sentence_transformers import SentenceTransformer
 
-
-ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
-
-def vectorRepresentation_TFIDF(ytrain):
+def vectorRepresentation_TFIDF(xtrain):
     '''
     Function to obtain TF-IDF embeddings for tweets in any ytrain.
     '''
-    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     vectorizer = TfidfVectorizer(
         max_features=5000,     
         stop_words=list(stopwords),  
@@ -23,12 +22,12 @@ def vectorRepresentation_TFIDF(ytrain):
 
     return X_tfidf, vectorizer
 
-def vectorRepresentation_BERT(ytrain):
+def vectorRepresentation_BERT(xtrain):
     '''
     Function to obtain BERT embeddings for tweets in any ytrain.
     '''
     # Obtain tweets
-    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     
     # Load BERT model and tokenizer
     tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased') # BERT tokenizer
@@ -36,7 +35,7 @@ def vectorRepresentation_BERT(ytrain):
 
     # Tokenize and encode tweets
     inputs = tokenizer(
-        tweets[:20],
+        tweets,
         return_tensors="pt",
         padding=True,   
         truncation=True,
@@ -56,6 +55,7 @@ def vectorRepresentation_BERT(ytrain):
     # Get the token embeddings from the last hidden state
     token_embeddings = outputs.last_hidden_state 
     tweet_embeddings = torch.mean(token_embeddings, dim=1)
+
     
     # For debugging
     # for i, emb in enumerate(tweet_embeddings):
@@ -64,8 +64,25 @@ def vectorRepresentation_BERT(ytrain):
     
     return tweet_embeddings
 
-x_tfidf, vectorizer = vectorRepresentation_TFIDF(ytrain)
-x_BERT = vectorRepresentation_BERT(ytrain)
+x_tfidf, vectorizer = vectorRepresentation_TFIDF(xtrain)
+x_BERT = vectorRepresentation_BERT(xtrain[:20])
 
 print("Shape of TF-IDF matrix:", x_tfidf.shape)
 print("Shape of BERT matrix:  ", x_BERT.shape)
+
+
+def vectorRepresentation_MiniLM(xtrain):
+    # Convert the input to a list of strings (assuming xtrain is a vector or a Pandas Series)
+    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
+
+    # Load the MiniLM model
+    model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L6-v2')
+
+    # Generate embeddings (output: a numpy array with shape [num_tweets, 384])
+    embeddings = model.encode(tweets, show_progress_bar=True)
+    
+    return embeddings
+
+
+x_MiniLM = vectorRepresentation_MiniLM(xtrain)
+print("Shape of BERT matrix:  ", x_MiniLM.shape)
