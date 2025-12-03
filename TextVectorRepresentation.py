@@ -67,5 +67,5 @@ def vectorRepresentation_BERT(ytrain):
 x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
 x_BERT = vectorRepresentation_BERT(ytrain)
 
-print("Shape de la matriz TF-IDF:", x_tfidf.shape)
-print("Shape de la matriz BERT:", x_BERT.shape)
+print("Shape of TF-IDF matrix:", x_tfidf.shape)
+print("Shape of BERT matrix:  ", x_BERT.shape)
