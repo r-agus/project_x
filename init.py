@@ -1,6 +1,5 @@
 from pandas import pandas as pd
 
-
 def load_data(file_path: str) -> pd.DataFrame:
     data = pd.read_csv(file_path, header=0)
     return data
@@ -19,6 +18,3 @@ ytest = testdata[label_name]
 
 xvalidation = validationdata['tweet']
 yvalidation = validationdata[label_name]
-
-print(yvalidation[:30])
-print(xvalidation[:30])
