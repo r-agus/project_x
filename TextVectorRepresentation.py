@@ -67,34 +67,5 @@ def vectorRepresentation_BERT(ytrain):
 x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
 x_BERT = vectorRepresentation_BERT(ytrain)
 
-print("Shape de la matriz TF-IDF:", x_tfidf.shape)
-print("Shape de la matriz BERT:", x_BERT.shape)
-
-
-
-
-
-# inputs = tokenizer(
-#     tweets[:30],
-#     return_tensors="pt",
-#     padding=True,        # rellena hasta la misma longitud
-#     truncation=True,     # corta si son demasiado largos
-#     max_length=64        # límite de tokens por tweet (ajústalo según necesidad)
-# )
-
-
-# with torch.no_grad():
-#     outputs = model(**inputs)
-
-# token_embeddings = outputs.last_hidden_state   
-
-# tweet_embeddings = torch.mean(token_embeddings, dim=1)  # shape: (n_tweets, 768)
-
-# for i, emb in enumerate(tweet_embeddings):
-#     print(f"Tweet {i}: embedding shape {emb.shape}")
-#     print(emb[:10])  
-
-# print(token_embeddings)
-# print(tweet_embeddings)
-
-# tweet_embeddings = torch.mean(token_embeddings, dim=1)
+print("Shape of TF-IDF matrix:", x_tfidf.shape)
+print("Shape of BERT matrix:  ", x_BERT.shape)
