@@ -40,7 +40,7 @@ def vectorRepresentation_BERT(ytrain):
         return_tensors="pt",
         padding=True,   
         truncation=True,
-        max_length=64
+        max_length=16
     )
     
     # # Debugging example for BERT tokenization
