@@ -16,9 +16,14 @@ from nltk.corpus import stopwords as sw
 
 from stopwords import stopwords
 
+
+
 def load_data(file_path: str) -> pd.DataFrame:
     data = pd.read_csv(file_path, header=0)
     return data
+
+traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
+ytrain = traindata.iloc[:, :]
 
 def print_data_info(ytrain: pd.DataFrame):
     # Shape of the training data
@@ -94,14 +99,15 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     unique_clean_words = set(clean_words)
     print("Número total de palabras únicas (sin stopwords):", len(unique_clean_words))
 
-    print(len(clean_words))
-    print(len(unique_clean_words))
+
+    df_unique = pd.DataFrame(list(unique_clean_words), columns=["word"])
+    df_unique.to_csv("unique_clean_words.csv", index=False, encoding="utf-8")
 
     word_counts = Counter(clean_words)
     most_common_words = word_counts.most_common(10)
     df_most_common = pd.DataFrame(most_common_words, columns=['word', 'count'])
     # Guardar a CSV
-    df_most_common.to_csv("gitignore/most_common_words.csv", index=False)
+    df_most_common.to_csv("most_common_words.csv", index=False)
     print("Most common words in tweets:")
     for word, count in most_common_words:
         print(f"  '{word}': {count} occurrences")
@@ -132,9 +138,6 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     return wordcloud
 
 if __name__ == "__main__":
-    traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
-    ytrain = traindata.iloc[:, :]
-    print_data_info(ytrain)
     print(f"{'-' * 35}")
     analyze_class_distribution(ytrain)
     print(f"{'-' * 35}")
@@ -147,6 +150,6 @@ if __name__ == "__main__":
     print(f"  Median length: {text_lengths.median()}")
     print(f"{'-' * 35}")
     wordcloud = generate_wordcloud(ytrain)
-    wordcloud.to_file(".gitignore/wordcloud.png")
+    wordcloud.to_file("wordcloud.png")
 
 
