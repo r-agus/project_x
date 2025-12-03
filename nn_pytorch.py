@@ -10,13 +10,13 @@ A BERT embedding layer is used to convert the tweet text into numerical format b
 import os
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 from torchvision import datasets, transforms
-from TextVectorRepresentation import tweet_embeddings
-from main import ytrain
+from TextVectorRepresentation import vectorRepresentation_BERT
+from main import load_data
+from sklearn.model_selection import train_test_split
 
-device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
-print(f"Using {device} device")
+
 
 class NeuralNetwork(nn.Module):
     """
@@ -31,14 +31,28 @@ class NeuralNetwork(nn.Module):
         - An output layer with 4 outputs corresponding to the 4 classification tasks.
         """
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
+
+        self.shared = nn.Sequential(
             nn.Linear(768, 512),
             nn.ReLU(),
             nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 4)  # 4 outputs
+            nn.ReLU()
         )
+
+        # Cabezas de salida una clasificación por cada tarea
+        self.gender_head   = nn.Linear(256, 2)
+        self.prof_head     = nn.Linear(256, 3)
+        self.bin_head      = nn.Linear(256, 2)
+        self.multi_head    = nn.Linear(256, 4)
+        # super().__init__()
+        # self.flatten = nn.Flatten()
+        # self.linear_relu_stack = nn.Sequential(
+        #     nn.Linear(768, 512),
+        #     nn.ReLU(),
+        #     nn.Linear(512, 256),
+        #     nn.ReLU(),
+        #     nn.Linear(256, 4)  # 4 outputs
+        # )
 
     def forward(self, x):
         """
@@ -48,12 +62,18 @@ class NeuralNetwork(nn.Module):
         Returns:
             torch.Tensor: Output logits.
         """
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        # x = self.flatten(x)
+        # logits = self.linear_relu_stack(x)
+        # return logits
+        x = x.view(x.size(0), -1)
+        h = self.shared(x)
 
-model = NeuralNetwork().to(device)
-print(model)
+        return {
+            "gender": self.gender_head(h),
+            "profession": self.prof_head(h),
+            "ideology_bin": self.bin_head(h),
+            "ideology_multi": self.multi_head(h)
+        }
 
 def map_politicES_labels(y_raw):
     """
@@ -79,14 +99,160 @@ def map_politicES_labels(y_raw):
 
     return torch.tensor(y_mapped, dtype=torch.long)
 
-X = tweet_embeddings.numpy()
-data = ytrain
-num_columns = data.shape[1]
-y_raw = data.iloc[:, 1:num_columns-1].values  # Labels are all columns except the first (user) and last (tweet text)
+# Initialize the model and device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = NeuralNetwork().to(device)
+print(f"Using {device} device")
+print(model)
 
+
+# Cargar dataset
+data_loaded = load_data('Datasets/EvaluationData/politicES_phase_2_test_codalab.csv')
+
+# Seleccionar n ejemplos
+n = 10000
+data = data_loaded.sample(n=n, random_state=42)
+
+
+print(f"Data loaded :  {data_loaded.shape}")
+print(f"Data selected : {data.shape}")
+
+# Embeddings BERT
+X = vectorRepresentation_BERT(data).numpy()
+print(f"Embeddings BERT obtenidos: {X.shape}")
+
+# Extraer etiquetas (todas menos user y texto)
+num_columns = data.shape[1]
+print(f"Número de columnas en el dataset: {num_columns}")
+y_raw = data.iloc[:, 1:num_columns-1].values
 y = map_politicES_labels(y_raw)
 
+print("Shapes de X e y:")
+print(X.shape, y.shape)  
+
+
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+# Debugging info
 print("Feature matrix shape:", X.shape)
 print("Labels shape:", y.shape)
 
+# Test and train shapes
+print("Training set shape:", X_train.shape, y_train.shape)
+print("Validation set shape:", X_val.shape, y_val.shape)
+print("Test set shape:", X_test.shape, y_test.shape)
 
+
+
+
+# Dataset and Dataloader
+train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long))
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+# Loss function and optimizer
+# TODO: ver si se puede ajustar
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+
+# Training loop. Training para cada clase.
+
+for epoch in range(10):
+    model.train()
+    total_loss = 0
+
+    for Xb, yb in train_loader:
+
+        Xb = Xb.to(device)
+        yb = yb.to(device)
+
+        outputs = model(Xb)
+
+        loss = (
+            criterion(outputs["gender"], yb[:,0]) +
+            criterion(outputs["profession"], yb[:,1]) +
+            criterion(outputs["ideology_bin"], yb[:,2]) +
+            criterion(outputs["ideology_multi"], yb[:,3])
+        )
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item()
+
+    print(f"Epoch {epoch+1} Loss: {total_loss:.4f}")
+
+
+# Evaluation on test set
+model.eval()
+X_test_tensor = torch.tensor(X_test, dtype=torch.float32).to(device)
+
+with torch.no_grad():
+    outs = model(X_test_tensor)
+
+pred_gender  = torch.argmax(outs["gender"], dim=1)
+pred_prof    = torch.argmax(outs["profession"], dim=1)
+pred_bin     = torch.argmax(outs["ideology_bin"], dim=1)
+pred_multi   = torch.argmax(outs["ideology_multi"], dim=1)
+
+
+
+def evaluate(model, dataloader):
+    model.eval()
+
+    correct_gender = 0
+    correct_prof = 0
+    correct_bin = 0
+    correct_multi = 0
+    total = 0
+
+    with torch.no_grad():
+        for Xb, yb in dataloader:
+            Xb = Xb.to(device)
+            yb = yb.to(device)
+
+            outputs = model(Xb)
+
+            pred_gender = torch.argmax(outputs["gender"], dim=1)
+            pred_prof   = torch.argmax(outputs["profession"], dim=1)
+            pred_bin    = torch.argmax(outputs["ideology_bin"], dim=1)
+            pred_multi  = torch.argmax(outputs["ideology_multi"], dim=1)
+
+            correct_gender += (pred_gender == yb[:, 0]).sum().item()
+            correct_prof   += (pred_prof   == yb[:, 1]).sum().item()
+            correct_bin    += (pred_bin    == yb[:, 2]).sum().item()
+            correct_multi  += (pred_multi  == yb[:, 3]).sum().item()
+
+            total += yb.size(0)
+
+    print("\n===== EVALUACIÓN EN TEST =====")
+    print(f"Accuracy Género:          {correct_gender/total:.4f}")
+    print(f"Accuracy Profesión:       {correct_prof/total:.4f}")
+    print(f"Accuracy Ideología bin:   {correct_bin/total:.4f}")
+    print(f"Accuracy Ideología multi: {correct_multi/total:.4f}")
+
+# Dataloader for tests
+test_dataset = TensorDataset(
+    torch.tensor(X_test, dtype=torch.float32),
+    torch.tensor(y_test, dtype=torch.long)
+)
+
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+# ESTO SOLO LO USO PARA VER LAS SALIDAS SI SON POCASs
+# evaluate(model, test_loader)
+# with torch.no_grad():
+#     outputs = model(torch.tensor(X_test, dtype=torch.float32).to(device))
+
+# pred_gender  = torch.argmax(outputs["gender"], dim=1).cpu().numpy()
+# pred_prof    = torch.argmax(outputs["profession"], dim=1).cpu().numpy()
+# pred_bin     = torch.argmax(outputs["ideology_bin"], dim=1).cpu().numpy()
+# pred_multi   = torch.argmax(outputs["ideology_multi"], dim=1).cpu().numpy()
+
+# print("Predicciones listas:")
+# print("Género:", pred_gender)
+# print("Profesión:", pred_prof)
+# print("Ideología (binaria):", pred_bin)
+# print("Ideología (multi):", pred_multi)

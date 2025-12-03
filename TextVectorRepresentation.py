@@ -6,7 +6,7 @@ from transformers import BertTokenizer, BertModel
 import torch
 
 
-ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
+# ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
 
 def vectorRepresention_TFIDF(ytrain):
     '''
@@ -36,7 +36,7 @@ def vectorRepresentation_BERT(ytrain):
 
     # Tokenize and encode tweets
     inputs = tokenizer(
-        tweets[:20],
+        tweets,
         return_tensors="pt",
         padding=True,   
         truncation=True,
@@ -64,11 +64,11 @@ def vectorRepresentation_BERT(ytrain):
     
     return tweet_embeddings
 
-x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
-x_BERT = vectorRepresentation_BERT(ytrain)
+# x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+# tweet_embeddings = vectorRepresentation_BERT(ytrain)
 
-print("Shape de la matriz TF-IDF:", x_tfidf.shape)
-print("Shape de la matriz BERT:", x_BERT.shape)
+# print("Shape de la matriz TF-IDF:", x_tfidf.shape)
+# print("Shape de la matriz BERT:", tweet_embeddings.shape)
 
 
 
