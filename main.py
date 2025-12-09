@@ -311,7 +311,7 @@ if __name__ == "__main__":
     analyze_class_distribution(ytrain, generate_plots=True)
     print(f"{'-' * 35}")
     # Print text length statistics (from tweets column, which corresponds to the last column)
-    text_lengths = ytrain.dropna().apply(len)
+    text_lengths = xtrain.dropna().apply(len)
     print("Text length statistics:")
     print(f"  Minimum length: {text_lengths.min()}")
     print(f"  Maximum length: {text_lengths.max()}")
