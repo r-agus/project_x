@@ -45,6 +45,7 @@ autodoc_mock_imports = [
     "transformers",
     "regex",
     "sentence_transformers",
+    "gensim",
 ]
 
 
@@ -61,6 +62,7 @@ nitpicky = True
 
 nitpick_ignore = [
     ("py:class", "pd.DataFrame"),
+    ("py:class", "pandas.DataFrame"),
     ("py:class", "torch.nn.Module"),
     ("py:class", "torch.Tensor"),
     ("py:class", "model"),
