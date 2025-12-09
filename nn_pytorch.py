@@ -12,7 +12,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import datasets, transforms
-from TextVectorRepresentation import vectorRepresentation_BERT
+from TextVectorRepresentation import vectorRepresentation_BERT, vectorRepresentation_TFIDF, vectorRepresentation_Word2Vec, separate_x_y_vectors, divide_train_val_test
 from main import load_data
 from sklearn.model_selection import train_test_split
 
@@ -44,15 +44,7 @@ class NeuralNetwork(nn.Module):
         self.prof_head     = nn.Linear(256, 3)
         self.bin_head      = nn.Linear(256, 2)
         self.multi_head    = nn.Linear(256, 4)
-        # super().__init__()
-        # self.flatten = nn.Flatten()
-        # self.linear_relu_stack = nn.Sequential(
-        #     nn.Linear(768, 512),
-        #     nn.ReLU(),
-        #     nn.Linear(512, 256),
-        #     nn.ReLU(),
-        #     nn.Linear(256, 4)  # 4 outputs
-        # )
+
 
     def forward(self, x):
         """
@@ -62,9 +54,6 @@ class NeuralNetwork(nn.Module):
         Returns:
             torch.Tensor: Output logits.
         """
-        # x = self.flatten(x)
-        # logits = self.linear_relu_stack(x)
-        # return logits
         x = x.view(x.size(0), -1)
         h = self.shared(x)
 
@@ -99,44 +88,29 @@ def map_politicES_labels(y_raw):
 
     return torch.tensor(y_mapped, dtype=torch.long)
 
-# Initialize the model and device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = NeuralNetwork().to(device)
 print(f"Using {device} device")
 print(model)
 
 
-# Cargar dataset
-data_loaded = load_data('Datasets/EvaluationData/politicES_phase_2_test_codalab.csv')
-
-# Seleccionar n ejemplos
-n = 40_000
-data = data_loaded.sample(n=n, random_state=42)
 
 
-print(f"Data loaded :  {data_loaded.shape}")
-print(f"Data selected : {data.shape}")
-
-# Embeddings BERT
-X = vectorRepresentation_BERT(data).numpy()
-print(f"Embeddings BERT obtenidos: {X.shape}")
-
-# Extraer etiquetas (todas menos user y texto)
-num_columns = data.shape[1]
-print(f"Número de columnas en el dataset: {num_columns}")
-y_raw = data.iloc[:, 1:num_columns-1].values
-y = map_politicES_labels(y_raw)
-
-print("Shapes de X e y:")
-print(X.shape, y.shape)  
+path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
+data = load_data(path)
+data = data.head(100)  # O especifica el número de filas que necesites
+train_data, val_data, test_data = divide_train_val_test(data)
+X_train, y_train = separate_x_y_vectors(train_data)
+X_val, y_val = separate_x_y_vectors(val_data)
+X_test, y_test = separate_x_y_vectors(test_data)
+x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_BERT(X_train, X_val, X_test)
 
 
-X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+# y = map_politicES_labels(y_raw)
+y_train_mapped = map_politicES_labels(y_train.values)
+y_val_mapped = map_politicES_labels(y_val.values)
+y_test_mapped = map_politicES_labels(y_test.values)
 
-# Debugging info
-print("Feature matrix shape:", X.shape)
-print("Labels shape:", y.shape)
 
 # Test and train shapes
 print("Training set shape:", X_train.shape, y_train.shape)
@@ -147,7 +121,7 @@ print("Test set shape:", X_test.shape, y_test.shape)
 
 
 # Dataset and Dataloader
-train_dataset = TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long))
+train_dataset = TensorDataset(torch.tensor(x_tfidf_train, dtype=torch.float32), y_train_mapped)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Loss function and optimizer
@@ -187,7 +161,7 @@ for epoch in range(10):
 
 # Evaluation on test set
 model.eval()
-X_test_tensor = torch.tensor(X_test, dtype=torch.float32).to(device)
+X_test_tensor = torch.tensor(x_tfidf_test, dtype=torch.float32).to(device)
 
 with torch.no_grad():
     outs = model(X_test_tensor)
@@ -235,8 +209,8 @@ def evaluate(model, dataloader):
 
 # Dataloader for tests
 test_dataset = TensorDataset(
-    torch.tensor(X_test, dtype=torch.float32),
-    torch.tensor(y_test, dtype=torch.long)
+    torch.tensor(x_tfidf_test, dtype=torch.float32),
+    y_test_mapped
 )
 
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
