@@ -21,7 +21,7 @@ dataset = Dataset.from_pandas(df)
 
 def tokenize(batch): # TOKENIZA DESDE SU VOCABULARIO
     """
-    Tokenize a batch of tweets with the project Roberta tokenizer.
+    Tokenize a batch of tweets with the project RoBERTa tokenizer.
 
     Args:
         batch (dict): Batch containing a ``"tweet"`` field.
