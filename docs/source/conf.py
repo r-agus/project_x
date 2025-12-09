@@ -44,6 +44,7 @@ autodoc_mock_imports = [
     "torchvision",
     "transformers",
     "regex",
+    "sentence_transformers",
 ]
 
 
@@ -72,4 +73,4 @@ intersphinx_mapping = {
 }
 
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "shibuya"

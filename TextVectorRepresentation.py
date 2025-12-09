@@ -4,15 +4,14 @@ import pandas as pd
 import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
+from init import xtrain
+from sentence_transformers import SentenceTransformer
 
-
-ytrain = pd.read_csv('./Datasets/PractiseData/development.csv', header=0)
-
-def vectorRepresention_TFIDF(ytrain):
+def vectorRepresentation_TFIDF(xtrain):
     '''
-    Function to obtain TF-IDF embeddings for tweets in any ytrain.
+    Function to obtain TF-IDF embeddings for tweets in any xtrain.
     '''
-    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     vectorizer = TfidfVectorizer(
         max_features=5000,     
         stop_words=list(stopwords),  
@@ -23,12 +22,12 @@ def vectorRepresention_TFIDF(ytrain):
 
     return X_tfidf, vectorizer
 
-def vectorRepresentation_BERT(ytrain):
+def vectorRepresentation_BERT(xtrain):
     '''
-    Function to obtain BERT embeddings for tweets in any ytrain.
+    Function to obtain BERT embeddings for tweets in any xtrain.
     '''
     # Obtain tweets
-    tweets = ytrain.iloc[:, -1].dropna().astype(str).tolist()
+    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     
     # Load BERT model and tokenizer
     tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased') # BERT tokenizer
@@ -36,11 +35,11 @@ def vectorRepresentation_BERT(ytrain):
 
     # Tokenize and encode tweets
     inputs = tokenizer(
-        tweets[:20],
+        tweets,
         return_tensors="pt",
         padding=True,   
         truncation=True,
-        max_length=64
+        max_length=16
     )
     
     # # Debugging example for BERT tokenization
@@ -56,7 +55,7 @@ def vectorRepresentation_BERT(ytrain):
     # Get the token embeddings from the last hidden state
     token_embeddings = outputs.last_hidden_state 
     tweet_embeddings = torch.mean(token_embeddings, dim=1)
-    
+
     # For debugging
     # for i, emb in enumerate(tweet_embeddings):
     #     print(f"Tweet {i}: embedding shape {emb.shape}")
