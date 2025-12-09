@@ -35,7 +35,7 @@ jobs:
           if [ -f docs/requirements.txt ]; then
             pip install -r docs/requirements.txt
           else
-            pip install sphinx sphinx-autodoc-typehints sphinx-rtd-theme sphinxcontrib-napoleon
+            pip install sphinx sphinx-autodoc-typehints shibuya sphinxcontrib-napoleon
           fi
 
       - name: Build Sphinx HTML
