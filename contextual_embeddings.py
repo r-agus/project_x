@@ -21,7 +21,7 @@ def cluster_with_kmeans(texts, embeddings, n_clusters=5):
         top_words_per_cluster: diccionario cluster -> palabras más representativas.
     """
     # Reducir dimensionalidad
-    pca = PCA(n_components=5, random_state=42)
+    pca = PCA(n_components=50, random_state=42)
     embeddings_reduced = pca.fit_transform(embeddings)
     
     # KMeans clustering
