@@ -13,7 +13,7 @@ import unicodedata
 def load_data(file_path: str) -> pd.DataFrame:
     """Loads the dataset from a CSV file.
     
-    Main funtion to load the dataset from a CSV file. It assumes the first row contains headers.
+    Main function to load the dataset from a CSV file. It assumes the first row contains headers.
 
     Args:
         file_path (str): Path to the CSV file.
