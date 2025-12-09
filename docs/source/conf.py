@@ -67,6 +67,7 @@ nitpick_ignore = [
     ("py:class", "torch.Tensor"),
     ("py:class", "model"),
     ("py:class", "nn.Module"),
+    ("py:class", "WordCloud"),
 ]
 
 # Inter-sphinx (references to external documentation)
