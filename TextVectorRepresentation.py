@@ -31,22 +31,18 @@ Text Preprocessing
 
 Vectorization Methods
 ---------------------
+- **TF-IDF Representation**: ``vectorRepresentation_TFIDF(xtrain, xval, xtest)``  
+  Generates sparse TF-IDF matrices for train, validation and test sets using a 
+  consistent vectorizer. Suitable for linear models.
 
-1. **TF-IDF Representation**
-   - ``vectorRepresentation_TFIDF(xtrain, xval, xtest)``  
-     Generates sparse TF-IDF matrices for train, validation and test sets using a 
-     consistent vectorizer. Suitable for linear models.
+- **BERT Sentence Embeddings**: ``vectorRepresentation_BERT(xtrain, xval, xtest)``  
+  Uses *bert-base-multilingual-cased* from HuggingFace Transformers to compute 
+  tweet embeddings via mean pooling over token embeddings.
 
-2. **BERT Sentence Embeddings**
-   - ``vectorRepresentation_BERT(xtrain, xval, xtest)``  
-     Uses *bert-base-multilingual-cased* from HuggingFace Transformers to compute 
-     tweet embeddings via mean pooling over token embeddings.
-
-3. **Word2Vec Embeddings**
-   - ``vectorRepresentation_Word2Vec(xtrain, xval, xtest)``  
-     Trains a Word2Vec model on the training corpus and generates dense vector 
-     representations by averaging token embeddings for each tweet. Handles tweets 
-     with no valid vocabulary tokens by returning zero vectors.
+- **Word2Vec Embeddings**: ``vectorRepresentation_Word2Vec(xtrain, xval, xtest)``  
+  Trains a Word2Vec model on the training corpus and generates dense vector 
+  representations by averaging token embeddings for each tweet. Handles tweets 
+  with no valid vocabulary tokens by returning zero vectors.
 
 Design Notes
 ------------
