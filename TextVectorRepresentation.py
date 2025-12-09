@@ -7,9 +7,15 @@ import torch
 from init import xtrain, ytrain
 
 def vectorRepresentation_TFIDF(xtrain):
-    '''
-    Function to obtain TF-IDF embeddings for tweets in any xtrain.
-    '''
+    """
+    Build TF-IDF embeddings for a collection of tweets.
+
+    Args:
+        xtrain: Iterable with raw tweet text.
+
+    Returns:
+        tuple: ``(X_tfidf, vectorizer)`` where ``X_tfidf`` is a sparse matrix.
+    """
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     vectorizer = TfidfVectorizer(
         max_features=5000,     
@@ -22,9 +28,15 @@ def vectorRepresentation_TFIDF(xtrain):
     return X_tfidf, vectorizer
 
 def vectorRepresentation_BERT(xtrain):
-    '''
-    Function to obtain BERT embeddings for tweets in any xtrain.
-    '''
+    """
+    Compute mean pooled BERT embeddings for a collection of tweets.
+
+    Args:
+        xtrain: Iterable with raw tweet text.
+
+    Returns:
+        torch.Tensor: Tensor of shape ``(n_samples, hidden_size)`` with tweet embeddings.
+    """
     # Obtain tweets
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     

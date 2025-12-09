@@ -44,6 +44,15 @@ def load_data(file_path: str) -> pd.DataFrame:
 # ytrain = traindata.iloc[:, :]
 
 def print_data_info(ytrain: pd.DataFrame):
+    """
+    Print structural information about the training dataframe.
+
+    Args:
+        ytrain (pd.DataFrame): Training split with user metadata and tweets.
+
+    Returns:
+        None
+    """
     # Shape of the training data
     print("Training data shape:", ytrain.shape)
 
@@ -61,6 +70,15 @@ def print_data_info(ytrain: pd.DataFrame):
     print("Unique users (labels) in training data:", len(unique_users))
 
 def analyze_class_distribution(ytrain: pd.DataFrame):
+    """
+    Display how many examples belong to each class in the first column.
+
+    Args:
+        ytrain (pd.DataFrame): Training split whose first column contains labels.
+
+    Returns:
+        None
+    """
     class_counts = ytrain.iloc[:, 0].value_counts()
     class_counts_unique = class_counts.nunique()
 
@@ -91,6 +109,21 @@ def analyze_class_distribution(ytrain: pd.DataFrame):
             print(f"  Classes {start_cls} to {prev_cls}: {prev_count} samples")
 
 def preserve_letters(text: str, letters: list) -> str:
+    """
+    Normalize a text string while preserving specific characters (e.g., ``ñ``).
+
+    The function temporarily replaces the target letters with placeholders,
+    removes diacritics from the rest of the string, and restores the original
+    letters. This is useful when cleaning Spanish tweets for the disinformation
+    and polarization analysis without losing language-specific characters.
+
+    Args:
+        text (str): Input text to normalize.
+        letters (list): Characters to preserve verbatim during normalization.
+
+    Returns:
+        str: The normalized text with the specified letters kept intact.
+    """
     # marca temporal para no perder la ñ/Ñ
     placeholders = {letter: f"__PLACEHOLDER_{i}__" for i, letter in enumerate(letters)}
     for k, v in placeholders.items():
@@ -104,6 +137,20 @@ def preserve_letters(text: str, letters: list) -> str:
     return text
 
 def generate_wordcloud(ytrain: pd.DataFrame):
+    """
+    Build a word cloud from the tweet column and print frequency diagnostics.
+
+    This helper aggregates the tweet text (assumed to be the last column),
+    removes stopwords, saves frequency CSV artifacts for later inspection, and
+    renders a matplotlib word cloud to visually inspect common terms in the
+    disinformation dataset.
+
+    Args:
+        ytrain (pd.DataFrame): Dataset containing tweets in the last column.
+
+    Returns:
+        WordCloud: The generated word cloud object.
+    """
     # Print most frequent words in the tweets, word cloud and examples by class
     all_text = ' '.join(ytrain.iloc[:, -1].dropna().astype(str).tolist())
     words = all_text.lower().split()
@@ -169,5 +216,3 @@ if __name__ == "__main__":
     print(f"{'-' * 35}")
     wordcloud = generate_wordcloud(ytrain)
     wordcloud.to_file("wordcloud.png")
-
-
