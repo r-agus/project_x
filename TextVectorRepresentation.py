@@ -5,66 +5,174 @@ import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
 from init import xtrain
+from sklearn.model_selection import train_test_split
+from gensim.models import Word2Vec
+import re
+import unicodedata
 
-def vectorRepresentation_TFIDF(xtrain):
+def load_data(file_path: str) -> pd.DataFrame:
+    """Loads the dataset from a CSV file.
+    
+    Main funtion to load the dataset from a CSV file. It assumes the first row contains headers.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        pd.DataFrame: Loaded dataset.
+    """
+    data = pd.read_csv(file_path, header=0)
+    return data
+
+
+def divide_train_val_test(data: pd.DataFrame, train_size: float = 0.7, val_size: float = 0.15, test_size: float = 0.15):
     '''
-    Function to obtain TF-IDF embeddings for tweets in any xtrain.
+    Divides the dataset into training, validation, and test sets.
+    Train = 70%, Validation = 15%, Test = 15%
+    Args:
+        data (pd.DataFrame): The dataset to be divided.
+        train_size (float): Proportion of the dataset to include in the training set.
+        val_size (float): Proportion of the dataset to include in the validation set.
+        test_size (float): Proportion of the dataset to include in the test set.
     '''
-    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
+    train, temp = train_test_split(data, test_size=(val_size + test_size), random_state=42)
+    val, test = train_test_split(temp, test_size=test_size/(val_size + test_size), random_state=42)
+    return train, val, test
+
+
+def separate_x_y_vectors(data: pd.DataFrame):
+    '''
+    Separates features and labels from the dataset.
+    
+    Args:
+        data (pd.DataFrame): The dataset.
+    '''
+    X = data['tweet']
+    y = data.iloc[:, 1:-1]
+    return X, y
+
+
+def vectorRepresentation_TFIDF(xtrain, xval, xtest):
+    '''
+    Function to obtain TF-IDF embeddings for tweets in train, validation, and test sets.
+    '''
+    train_tweets = pd.Series(xtrain).dropna().astype(str).tolist()
+    val_tweets = pd.Series(xval).dropna().astype(str).tolist()
+    test_tweets = pd.Series(xtest).dropna().astype(str).tolist()
+    
     vectorizer = TfidfVectorizer(
-        max_features=5000,     
-        stop_words=list(stopwords),  
-        ngram_range=(1,2)      
+        max_features=5000,
+        stop_words=list(stopwords),
+        ngram_range=(1, 2)
     )
 
-    X_tfidf = vectorizer.fit_transform(tweets)
+    X_tfidf_train = vectorizer.fit_transform(train_tweets)
+    X_tfidf_val = vectorizer.transform(val_tweets)
+    X_tfidf_test = vectorizer.transform(test_tweets)
+    
+    return X_tfidf_train, X_tfidf_val, X_tfidf_test, vectorizer
 
-    return X_tfidf, vectorizer
 
-def vectorRepresentation_BERT(xtrain):
+def vectorRepresentation_BERT(xtrain, xval, xtest):
     '''
-    Function to obtain BERT embeddings for tweets in any xtrain.
+    Function to obtain BERT embeddings for tweets in train, validation, and test sets.
     '''
-    # Obtain tweets
-    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+    model = BertModel.from_pretrained('bert-base-multilingual-cased')
     
-    # Load BERT model and tokenizer
-    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased') # BERT tokenizer
-    model = BertModel.from_pretrained('bert-base-multilingual-cased') # BERT model
+    def get_embeddings(tweets_data):
+        tweets = pd.Series(tweets_data).dropna().astype(str).tolist()
+        inputs = tokenizer(
+            tweets,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=16
+        )
+        with torch.no_grad():
+            outputs = model(**inputs)
+        token_embeddings = outputs.last_hidden_state
+        tweet_embeddings = torch.mean(token_embeddings, dim=1)
+        tweet_embeddings = tweet_embeddings.cpu().numpy()
+        return tweet_embeddings
+    
+    train_embeddings = get_embeddings(xtrain)
+    val_embeddings = get_embeddings(xval)
+    test_embeddings = get_embeddings(xtest)
+    
+    return train_embeddings, val_embeddings, test_embeddings
 
-    # Tokenize and encode tweets
-    inputs = tokenizer(
-        tweets,
-        return_tensors="pt",
-        padding=True,   
-        truncation=True,
-        max_length=16
-    )
-    
-    # # Debugging example for BERT tokenization
-    # example = "El gobierno del PSOE está trabajando en economía."
-    # tokens_example = tokenizer.tokenize(example)
-    # print(tokens_example)
-    
-    
-    # Get BERT embeddings
-    with torch.no_grad():
-        outputs = model(**inputs)
-    
-    # Get the token embeddings from the last hidden state
-    token_embeddings = outputs.last_hidden_state 
-    tweet_embeddings = torch.mean(token_embeddings, dim=1)
+def preserve_letters(text: str, letters: list) -> str:
+    """Preserves specific letters during text normalization."""
+    placeholders = {letter: f"__PLACEHOLDER_{i}__" for i, letter in enumerate(letters)}
+    for k, v in placeholders.items():
+        text = text.replace(k, v)
+    text = unicodedata.normalize('NFKD', text)
+    text = ''.join(ch for ch in text if not unicodedata.combining(ch))
+    for k, v in placeholders.items():
+        text = text.replace(v, k)
+    return text
 
-    # For debugging
-    # for i, emb in enumerate(tweet_embeddings):
-    #     print(f"Tweet {i}: embedding shape {emb.shape}")
-    #     print(emb[:10])  
+
+def preprocess_text(text, letters=['ñ','Ñ']):
+    """Preprocesses text: preserves letters, lowercases, removes special chars, tokenizes, removes stopwords."""
+    text = preserve_letters(text, letters)
+    text = text.lower()
+    text = re.sub(r"[^a-zA-ZñÑáéíóúüÁÉÍÓÚÜ\s]", "", text)
+    tokens = text.split()
+    tokens = [w for w in tokens if w not in stopwords]
+    return tokens
+
+
+def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
+    '''
+    Function to obtain Word2Vec embeddings for tweets in train, validation, and test sets.
+    '''
+    train_tweets = pd.Series(xtrain).dropna().astype(str).tolist()
+    val_tweets = pd.Series(xval).dropna().astype(str).tolist()
+    test_tweets = pd.Series(xtest).dropna().astype(str).tolist()
     
-    return tweet_embeddings
+    train_tokens = [preprocess_text(tweet) for tweet in train_tweets]
+    
+    try:
+        model = Word2Vec(
+            sentences=train_tokens,
+            vector_size=100,
+            window=5,
+            min_count=2,
+            workers=4,
+            sg=1
+        )
+    except Exception as e:
+        pass
+    
+    def get_word2vec_embeddings(tweets_data):
+        embeddings = []
+        for tweet in tweets_data:
+            tokens = preprocess_text(tweet)
+            tweet_embedding = np.mean([model.wv[token] for token in tokens if token in model.wv], axis=0)
+            embeddings.append(tweet_embedding)
+        return np.array(embeddings)
+    
+    train_embeddings = get_word2vec_embeddings(train_tweets)
+    val_embeddings = get_word2vec_embeddings(val_tweets)
+    test_embeddings = get_word2vec_embeddings(test_tweets)
+    
+    return train_embeddings, val_embeddings, test_embeddings
 
 if __name__ == "__main__":
-    x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
-    x_BERT = vectorRepresentation_BERT(ytrain)
+    path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
+    data = load_data(path)
+    data = data.head(100)  # O especifica el número de filas que necesites
+    train_data, val_data, test_data = divide_train_val_test(data)
+    X_train, y_train = separate_x_y_vectors(train_data)
+    X_val, y_val = separate_x_y_vectors(val_data)
+    X_test, y_test = separate_x_y_vectors(test_data)
+    x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_BERT(X_train, X_val, X_test)
 
-    print("Shape of TF-IDF matrix:", x_tfidf.shape)
-    print("Shape of BERT matrix:  ", x_BERT.shape)
+    print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
+    print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
+    print ("Shape of TF-IDF test matrix: ", x_tfidf_test.shape)
+    print(x_tfidf_test)
+
+
