@@ -52,10 +52,6 @@ Design Notes
   loading them unnecessarily.
 - The module is intentionally self-contained so that other parts of the project can 
   call any representation method interchangeably.
-
-This module serves as the backbone for all text-representation experiments performed 
-in the project and allows seamless comparison between classical and deep embedding 
-methods.
 """
 
 from sklearn.feature_extraction.text import TfidfVectorizer
