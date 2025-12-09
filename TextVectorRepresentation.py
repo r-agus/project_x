@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 
 def vectorRepresentation_TFIDF(xtrain):
     '''
-    Function to obtain TF-IDF embeddings for tweets in any ytrain.
+    Function to obtain TF-IDF embeddings for tweets in any xtrain.
     '''
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
     vectorizer = TfidfVectorizer(
