@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from nltk.corpus import stopwords as sw
 from init import get_data_splits
-from stopwords import stopwords
 import matplotlib.pyplot as plt
 import seaborn as sns
 
