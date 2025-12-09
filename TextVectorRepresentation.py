@@ -5,7 +5,6 @@ import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
 from init import xtrain
-from sentence_transformers import SentenceTransformer
 
 def vectorRepresentation_TFIDF(xtrain):
     '''
