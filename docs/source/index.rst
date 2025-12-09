@@ -68,3 +68,5 @@ stopwords
    :maxdepth: 2
    :caption: Additional guides
 
+   project_overview
+
