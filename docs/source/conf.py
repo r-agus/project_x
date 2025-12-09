@@ -60,6 +60,10 @@ nitpicky = True
 
 nitpick_ignore = [
     ("py:class", "pd.DataFrame"),
+    ("py:class", "torch.nn.Module"),
+    ("py:class", "torch.Tensor"),
+    ("py:class", "model"),
+    ("py:class", "nn.Module"),
 ]
 
 # Inter-sphinx (references to external documentation)

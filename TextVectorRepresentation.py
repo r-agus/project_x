@@ -63,26 +63,9 @@ def vectorRepresentation_BERT(xtrain):
     
     return tweet_embeddings
 
-x_tfidf, vectorizer = vectorRepresentation_TFIDF(xtrain)
-x_BERT = vectorRepresentation_BERT(xtrain[:20])
+if __name__ == "__main__":
+    x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+    x_BERT = vectorRepresentation_BERT(ytrain)
 
-print("Shape of TF-IDF matrix:", x_tfidf.shape)
-print("Shape of BERT matrix:  ", x_BERT.shape)
-
-
-def vectorRepresentation_MiniLM(xtrain):
-    """
-    Function to obtain MiniLM embeddings (sentence-transformer model) for tweets in any xtrain.
-    """
-    tweets = pd.Series(xtrain).dropna().astype(str).tolist()
-
-    model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L6-v2')
-
-    # (output: a numpy array with shape [num_tweets, 384])
-    embeddings = model.encode(tweets, show_progress_bar=True)
-    
-    return embeddings
-
-
-x_MiniLM = vectorRepresentation_MiniLM(xtrain)
-print("Shape of BERT matrix:  ", x_MiniLM.shape)
+    print("Shape of TF-IDF matrix:", x_tfidf.shape)
+    print("Shape of BERT matrix:  ", x_BERT.shape)
