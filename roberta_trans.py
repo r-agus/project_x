@@ -61,7 +61,8 @@ def train_gender_model(train_dataset, val_dataset, num_labels,
         num_train_epochs=epochs,
         logging_steps=20,
         save_strategy="epoch",
-        fp16=torch.cuda.is_available()
+        fp16=torch.cuda.is_available(),
+        report_to=[]
     )
 
     trainer = Trainer(
