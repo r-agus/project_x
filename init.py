@@ -13,7 +13,7 @@ def load_data(file_path: str) -> pd.DataFrame:
     """Loads the dataset from a CSV file.
     
     Main function to load the dataset from a CSV file. It assumes the first row contains headers.
-    The xtrain data consists on the tweets, while ytrain contains the labels (e.g., 'gender', 'ideology', etc.).
+    The xtrain data consists of the tweets, while ytrain contains the labels (e.g., 'gender', 'ideology', etc.).
 
     Args:
         file_path (str): Path to the CSV file.
