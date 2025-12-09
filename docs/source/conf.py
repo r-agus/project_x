@@ -44,6 +44,7 @@ autodoc_mock_imports = [
     "torchvision",
     "transformers",
     "regex",
+    "sentence_transformers",
 ]
 
 
