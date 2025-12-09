@@ -190,13 +190,13 @@ def run_model_experiment(model_type, target_col, exp_name):
     Returns
     -------
     dict
-        Dictionary with accuracy and macro F1-score for each representation:
-        
-        {
-            "tfidf": (accuracy, f1_macro),
-            "word2vec": (accuracy, f1_macro),
-            "bert": (accuracy, f1_macro)
-        }
+        Dictionary with accuracy and macro F1-score for each representation::
+
+            {
+                "tfidf": (accuracy, f1_macro),
+                "word2vec": (accuracy, f1_macro),
+                "bert": (accuracy, f1_macro)
+            }
     """
     print(f"\n{model_type.upper()} EXPERIMENT: {exp_name}")
 
