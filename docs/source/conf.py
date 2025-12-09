@@ -44,6 +44,8 @@ autodoc_mock_imports = [
     "torchvision",
     "transformers",
     "regex",
+    "sentence_transformers",
+    "gensim",
 ]
 
 
@@ -60,6 +62,11 @@ nitpicky = True
 
 nitpick_ignore = [
     ("py:class", "pd.DataFrame"),
+    ("py:class", "pandas.DataFrame"),
+    ("py:class", "torch.nn.Module"),
+    ("py:class", "torch.Tensor"),
+    ("py:class", "model"),
+    ("py:class", "nn.Module"),
 ]
 
 # Inter-sphinx (references to external documentation)
@@ -68,4 +75,4 @@ intersphinx_mapping = {
 }
 
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "shibuya"

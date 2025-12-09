@@ -6,36 +6,67 @@
 Project X documentation
 =======================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+Welcome to the **Project X** documentation. This project provides tools for
+data loading, text preprocessing, and machine-learning models for the
+politicES dataset.
 
-Overview
---------
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
 
-This site hosts the developer documentation for Project X.
+Getting Started
+---------------
 
-API reference
--------------
+Install dependencies from the repository root::
+
+   pip install -r requirements.txt
+
+Modules
+-------
+
+main
+~~~~
 
 .. automodule:: main
    :members:
    :undoc-members:
    :show-inheritance:
-   :noindex:
 
-.. autosummary::
-   :toctree: _autosummary
-   :caption: Public functions
-   :nosignatures:
+modeling_sklearn
+~~~~~~~~~~~~~~~~
 
-   load_data
-   print_data_info
-   analyze_class_distribution
-   preserve_letters
-   generate_wordcloud
+.. automodule:: modeling_sklearn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+nn_pytorch
+~~~~~~~~~~
+
+.. automodule:: nn_pytorch
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+TextVectorRepresentation
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: TextVectorRepresentation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+stopwords
+~~~~~~~~~
+
+.. automodule:: stopwords
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. toctree::
    :maxdepth: 2
    :caption: Additional guides
+
+   project_overview
 
