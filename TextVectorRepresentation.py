@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from transformers import BertTokenizer, BertModel
 import torch
-from init import xtrain
+from init import xtrain, ytrain
 
 def vectorRepresentation_TFIDF(xtrain):
     '''
@@ -63,7 +63,7 @@ def vectorRepresentation_BERT(xtrain):
     return tweet_embeddings
 
 if __name__ == "__main__":
-    x_tfidf, vectorizer = vectorRepresention_TFIDF(ytrain)
+    x_tfidf, vectorizer = vectorRepresentation_TFIDF(ytrain)
     x_BERT = vectorRepresentation_BERT(ytrain)
 
     print("Shape of TF-IDF matrix:", x_tfidf.shape)
