@@ -72,7 +72,7 @@ print("Shape of BERT matrix:  ", x_BERT.shape)
 
 def vectorRepresentation_MiniLM(xtrain):
     """
-    Function to obtain BERT embeddings (MiniLM model) for tweets in any xtrain.
+    Function to obtain MiniLM embeddings (sentence-transformer model) for tweets in any xtrain.
     """
     tweets = pd.Series(xtrain).dropna().astype(str).tolist()
 
