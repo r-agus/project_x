@@ -110,7 +110,7 @@ print(model)
 data_loaded = load_data('Datasets/EvaluationData/politicES_phase_2_test_codalab.csv')
 
 # Seleccionar n ejemplos
-n = 10000
+n = 40_000
 data = data_loaded.sample(n=n, random_state=42)
 
 
@@ -240,9 +240,9 @@ test_dataset = TensorDataset(
 )
 
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+evaluate(model, test_loader)
 
 # ESTO SOLO LO USO PARA VER LAS SALIDAS SI SON POCASs
-# evaluate(model, test_loader)
 # with torch.no_grad():
 #     outputs = model(torch.tensor(X_test, dtype=torch.float32).to(device))
 
