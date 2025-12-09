@@ -150,7 +150,11 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
         embeddings = []
         for tweet in tweets_data:
             tokens = preprocess_text(tweet)
-            tweet_embedding = np.mean([model.wv[token] for token in tokens if token in model.wv], axis=0)
+            token_vecs = [model.wv[token] for token in tokens if token in model.wv]
+            if len(token_vecs) > 0:
+                tweet_embedding = np.mean(token_vecs, axis=0)
+            else:
+                tweet_embedding = np.zeros(model.vector_size)
             embeddings.append(tweet_embedding)
         return np.array(embeddings)
     

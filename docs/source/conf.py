@@ -68,6 +68,8 @@ nitpick_ignore = [
     ("py:class", "model"),
     ("py:class", "nn.Module"),
     ("py:class", "WordCloud"),
+    ("py:class", "array-like"),
+    ("py:class", "sparse matrix"),
 ]
 
 # Inter-sphinx (references to external documentation)
