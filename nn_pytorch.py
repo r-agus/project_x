@@ -13,6 +13,8 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from TextVectorRepresentation import (
     vectorRepresentation_BERT,
+    vectorRepresentation_TFIDF,
+    vectorRepresentation_Word2Vec,
     separate_x_y_vectors,
     divide_train_val_test
 )
@@ -38,11 +40,22 @@ class NeuralNetwork(nn.Module):
         super().__init__()
 
         self.shared = nn.Sequential(
-            nn.Linear(768, 512),
+            nn.Linear(768, 1024),
+            nn.BatchNorm1d(1024),
             nn.ReLU(),
+            nn.Dropout(0.3),
+
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+
             nn.Linear(512, 256),
-            nn.ReLU()
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.2)
         )
+
 
         self.gender_head = nn.Linear(256, 2)
         self.prof_head = nn.Linear(256, 3)
@@ -121,7 +134,7 @@ print(model)
 
 path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 data = load_data(path)
-n = 10000
+n = 30000
 data = data.sample(n=n, random_state=42)
 
 train_data, val_data, test_data = divide_train_val_test(data)
@@ -135,7 +148,7 @@ X_test, y_test = separate_x_y_vectors(test_data)
 #   BERT VECTORIZATION
 # ============================
 
-x_train, x_val, x_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+x_train, x_val, x_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
 
 y_train_mapped = map_politicES_labels(y_train.values)
 y_val_mapped = map_politicES_labels(y_val.values)
@@ -146,18 +159,23 @@ y_test_mapped = map_politicES_labels(y_test.values)
 #   DATA LOADERS
 # ============================
 
+x_train_dense = x_train.toarray()
+x_val_dense   = x_val.toarray()
+x_test_dense  = x_test.toarray()
+
+
 train_loader = DataLoader(
-    TensorDataset(torch.tensor(x_train, dtype=torch.float32), y_train_mapped),
+    TensorDataset(torch.tensor(x_train_dense, dtype=torch.float32), y_train_mapped),
     batch_size=32, shuffle=True
 )
 
 val_loader = DataLoader(
-    TensorDataset(torch.tensor(x_val, dtype=torch.float32), y_val_mapped),
+    TensorDataset(torch.tensor(x_val_dense, dtype=torch.float32), y_val_mapped),
     batch_size=32, shuffle=False
 )
 
 test_loader = DataLoader(
-    TensorDataset(torch.tensor(x_test, dtype=torch.float32), y_test_mapped),
+    TensorDataset(torch.tensor(x_test_dense, dtype=torch.float32), y_test_mapped),
     batch_size=32, shuffle=False
 )
 
@@ -167,14 +185,19 @@ test_loader = DataLoader(
 # ============================
 
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-
+optimizer = torch.optim.AdamW(model.parameters(), lr=5e-6, weight_decay=1e-6)
 
 # ============================
-#   TRAINING LOOP WITH VAL
+#   TRAINING LOOP WITH EARLY STOPPING
 # ============================
 
-for epoch in range(7):
+patience = 3
+best_val_loss = float('inf')
+epochs_no_improve = 0
+best_model_state = None
+max_epochs = 50  # número máximo de épocas
+
+for epoch in range(max_epochs):
     model.train()
     total_loss = 0
 
@@ -193,29 +216,40 @@ for epoch in range(7):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
         total_loss += loss.item()
 
-    # VALIDACIÓN
+    # Validación
     model.eval()
     val_loss = 0
-
     with torch.no_grad():
         for Xv, yv in val_loader:
             Xv, yv = Xv.to(device), yv.to(device)
             out = model(Xv)
-
             vloss = (
                 criterion(out["gender"], yv[:, 0]) +
                 criterion(out["profession"], yv[:, 1]) +
                 criterion(out["ideology_bin"], yv[:, 2]) +
                 criterion(out["ideology_multi"], yv[:, 3])
             )
-
             val_loss += vloss.item()
 
     print(f"Epoch {epoch+1} | Train Loss: {total_loss:.4f} | Val Loss: {val_loss:.4f}")
 
+    # Early stopping
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        epochs_no_improve = 0
+        best_model_state = model.state_dict()
+    else:
+        epochs_no_improve += 1
+
+    if epochs_no_improve >= patience:
+        print(f"Early stopping at epoch {epoch+1}")
+        break
+
+# Cargar el mejor modelo
+if best_model_state is not None:
+    model.load_state_dict(best_model_state)
 
 # ============================
 #   EVALUATION ON TEST

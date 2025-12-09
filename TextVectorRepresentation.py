@@ -61,7 +61,7 @@ def vectorRepresentation_TFIDF(xtrain, xval, xtest):
     test_tweets = pd.Series(xtest).dropna().astype(str).tolist()
     
     vectorizer = TfidfVectorizer(
-        max_features=5000,
+        max_features=768,
         stop_words=list(stopwords),
         ngram_range=(1, 2)
     )
