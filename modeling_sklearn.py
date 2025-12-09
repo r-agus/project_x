@@ -1,3 +1,50 @@
+"""
+Model Training and Evaluation Pipeline
+======================================
+
+This module defines the training and evaluation workflow used in the project for
+benchmarking classical machine learning models on political ideology
+classification tasks.
+
+It provides three core capabilities:
+
+1. **Label encoding**  
+   Converts categorical labels from the dataset into numerical format using a
+   scikit-learn `LabelEncoder`, ensuring consistent mapping across train,
+   validation, and test splits.
+
+2. **Model training and evaluation**  
+   Implements a unified function for training either Logistic Regression or
+   Linear SVM models.  
+   The evaluation includes:
+   - accuracy,
+   - macro-averaged F1-score,
+   - classification report,
+   - confusion matrix.  
+   Metrics are produced for both the validation and test sets.
+
+3. **Experiment orchestration**  
+   The function `run_model_experiment` coordinates a full experiment for a given
+   target label (binary or multiclass) by:
+   - loading dataset splits from ``TextVectorRepresentation.py``,
+   - obtaining TF-IDF, Word2Vec, and BERT embeddings from the same module,
+   - training and evaluating the chosen model on each representation,
+   - returning the aggregated metrics for comparison.
+
+This module does *not* implement text vectorization itself; instead, it acts as
+an evaluation layer on top of the embeddings generated externally.
+
+The ``__main__`` block runs a complete set of experiments and prints a
+comparative performance table for all combinations of:
+- representation method (TF-IDF, Word2Vec, BERT),
+- model type (Logistic Regression, Linear SVM),
+- classification task (binary vs. multiclass).
+
+The goal is to facilitate systematic, repeatable benchmarking across different
+feature representations while keeping the training logic centralised and
+consistent.
+"""
+
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
