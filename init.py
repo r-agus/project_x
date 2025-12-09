@@ -65,6 +65,7 @@ def get_data_splits(number_of_samples=None):
     if X_train is not None:
         if number_of_samples is not None:
             return X_train[:number_of_samples], y_train[:number_of_samples], X_val, y_val, X_test, y_test
+        return X_train, y_train, X_val, y_val, X_test, y_test
 
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = load_data(path)
