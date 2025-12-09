@@ -21,10 +21,8 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from nltk.corpus import stopwords as sw
-from init import xtrain, ytrain, xtest, ytest, xvalidation, yvalidation
 from stopwords import stopwords
-
-
+from TextVectorRepresentation import vectorRepresentation_TFIDF
 
 def load_data(file_path: str) -> pd.DataFrame:
     """Loads the dataset from a CSV file.
@@ -40,28 +38,28 @@ def load_data(file_path: str) -> pd.DataFrame:
     data = pd.read_csv(file_path, header=0)
     return data
 
-# traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
-# ytrain = traindata.iloc[:, :]
+traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
+data = traindata.iloc[:, :]
 
-def print_data_info(ytrain: pd.DataFrame):
+def print_data_info(data: pd.DataFrame):
     # Shape of the training data
-    print("Training data shape:", ytrain.shape)
+    print("Training data shape:", data.shape)
 
     # Print the headers of the dataset
-    print("Headers:", ytrain.columns.tolist())
+    print("Headers:", data.columns.tolist())
 
     # Print the data types of each column
-    for col in ytrain.columns:
-        first_non_null = ytrain[col].dropna().iloc[0] if not ytrain[col].dropna().empty else None
-        padding = ' ' * (max(len(c) for c in ytrain.columns) - len(col))
+    for col in data.columns:
+        first_non_null = data[col].dropna().iloc[0] if not data[col].dropna().empty else None
+        padding = ' ' * (max(len(c) for c in data.columns) - len(col))
         print(f"  Column '{col}' {padding} -> type: {type(first_non_null).__name__}")
 
-    # Users are in the first column, extract unique users from ytrain
-    unique_users = ytrain.iloc[:, 0].unique()
+    # Users are in the first column, extract unique users from data
+    unique_users = data.iloc[:, 0].unique()
     print("Unique users (labels) in training data:", len(unique_users))
 
-def analyze_class_distribution(ytrain: pd.DataFrame):
-    class_counts = ytrain.iloc[:, 0].value_counts()
+def analyze_class_distribution(data: pd.DataFrame):
+    class_counts = data.iloc[:, 0].value_counts()
     class_counts_unique = class_counts.nunique()
 
     if class_counts_unique == 1:
@@ -103,9 +101,9 @@ def preserve_letters(text: str, letters: list) -> str:
         text = text.replace(v, k)
     return text
 
-def generate_wordcloud(ytrain: pd.DataFrame):
+def generate_wordcloud(data: pd.DataFrame):
     # Print most frequent words in the tweets, word cloud and examples by class
-    all_text = ' '.join(ytrain.iloc[:, -1].dropna().astype(str).tolist())
+    all_text = ' '.join(data.iloc[:, -1].dropna().astype(str).tolist())
     words = all_text.lower().split()
     # Remove punctuation from words
     tokens = preserve_letters(all_text.lower(), ['ñ', 'Ñ'])
@@ -157,17 +155,17 @@ def generate_wordcloud(ytrain: pd.DataFrame):
 
 if __name__ == "__main__":
     print(f"{'-' * 35}")
-    analyze_class_distribution(ytrain)
+    analyze_class_distribution(data)
     print(f"{'-' * 35}")
     # Print text length statistics (from tweets column, which corresponds to the last column)
-    text_lengths = ytrain.iloc[:, -1].dropna().apply(len)
+    text_lengths = data.iloc[:, -1].dropna().apply(len)
     print("Text length statistics:")
     print(f"  Minimum length: {text_lengths.min()}")
     print(f"  Maximum length: {text_lengths.max()}")
     print(f"  Average length: {text_lengths.mean():.2f}")
     print(f"  Median length: {text_lengths.median()}")
     print(f"{'-' * 35}")
-    wordcloud = generate_wordcloud(ytrain)
+    wordcloud = generate_wordcloud(data)
     wordcloud.to_file("wordcloud.png")
 
 
