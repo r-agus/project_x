@@ -191,6 +191,7 @@ def run_model_experiment(model_type, target_col, exp_name):
     -------
     dict
         Dictionary with accuracy and macro F1-score for each representation:
+        
         {
             "tfidf": (accuracy, f1_macro),
             "word2vec": (accuracy, f1_macro),
