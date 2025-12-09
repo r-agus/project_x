@@ -28,11 +28,15 @@ def divide_train_val_test(data: pd.DataFrame, train_size: float = 0.7, val_size:
     '''
     Divides the dataset into training, validation, and test sets.
     Train = 70%, Validation = 15%, Test = 15%
+
     Args:
         data (pd.DataFrame): The dataset to be divided.
         train_size (float): Proportion of the dataset to include in the training set.
         val_size (float): Proportion of the dataset to include in the validation set.
         test_size (float): Proportion of the dataset to include in the test set.
+
+    Returns:
+        tuple: A tuple containing three pd.DataFrame objects: (train, val, test).
     '''
     train, temp = train_test_split(data, test_size=(val_size + test_size), random_state=42)
     val, test = train_test_split(temp, test_size=test_size/(val_size + test_size), random_state=42)
