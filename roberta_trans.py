@@ -20,6 +20,15 @@ if df["labels"].dtype == "object":
 dataset = Dataset.from_pandas(df)
 
 def tokenize(batch): # TOKENIZA DESDE SU VOCABULARIO
+    """
+    Tokenize a batch of tweets with the project RoBERTa tokenizer.
+
+    Args:
+        batch (dict): Batch containing a ``"tweet"`` field.
+
+    Returns:
+        dict: Tokenized inputs ready for the Trainer API.
+    """
     return tokenizer(batch["tweet"], truncation=True, padding="max_length", max_length=128)
 
 dataset = dataset.map(tokenize, batched=True)

@@ -19,6 +19,23 @@ TARGET_COL = "ideology_binary"
 
 def load_and_split(data_path, text_col=TEXT_COL, target_col=TARGET_COL,
                    test_size=0.2, val_size=0.1, random_state=42):
+    """
+    Load the dataset and create train/validation/test splits.
+
+    The split is stratified to preserve the class distribution, which is useful
+    when evaluating ideological polarization models.
+
+    Args:
+        data_path (str): Path to the CSV file.
+        text_col (str): Name of the text column.
+        target_col (str): Target column to predict.
+        test_size (float): Proportion for the test split.
+        val_size (float): Proportion for the validation split.
+        random_state (int): Seed for reproducible splits.
+
+    Returns:
+        tuple: ``(X_train, X_val, X_test, y_train, y_val, y_test)``.
+    """
     df = pd.read_csv(data_path)
     # We delete the rows with no text or no label
     df = df.dropna(subset=[text_col, target_col])
@@ -41,6 +58,17 @@ def load_and_split(data_path, text_col=TEXT_COL, target_col=TARGET_COL,
 
 # To encode string labels into numbers
 def encode_labels(y_train, y_val, y_test):
+    """
+    Convert string labels into integer-encoded arrays.
+
+    Args:
+        y_train: Training labels.
+        y_val: Validation labels.
+        y_test: Test labels.
+
+    Returns:
+        tuple: Encoded ``(y_train_enc, y_val_enc, y_test_enc, encoder)``.
+    """
     encoder = LabelEncoder()
     y_train_enc = encoder.fit_transform(y_train)
     y_val_enc = encoder.transform(y_val)
@@ -50,6 +78,17 @@ def encode_labels(y_train, y_val, y_test):
 
 # TF-IDF with our custom stopwords list
 def build_tfidf(X_train, X_val, X_test):
+    """
+    Fit a TF-IDF vectorizer and transform the provided splits.
+
+    Args:
+        X_train: Raw text for training.
+        X_val: Raw text for validation.
+        X_test: Raw text for testing.
+
+    Returns:
+        tuple: ``(vectorizer, X_train_tfidf, X_val_tfidf, X_test_tfidf)``.
+    """
     vectorizer = TfidfVectorizer(
         max_features=20_000,
         ngram_range=(1, 2),
@@ -64,6 +103,21 @@ def build_tfidf(X_train, X_val, X_test):
 
 
 def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test, y_test):
+    """
+    Train a scikit-learn classifier and print evaluation metrics.
+
+    Args:
+        model_type (str): ``"logreg"`` for Logistic Regression or ``"svm"`` for Linear SVM.
+        X_train: Training features.
+        y_train: Training labels.
+        X_val: Validation features.
+        y_val: Validation labels.
+        X_test: Test features.
+        y_test: Test labels.
+
+    Returns:
+        tuple: ``(model, accuracy, f1_macro)`` on the test set.
+    """
 
     # We create the model
     if model_type == "logreg":
