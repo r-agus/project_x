@@ -4,7 +4,7 @@ throughout the project to load the dataset, separate features and labels, and di
 validation, and test sets.
 """
 
-from pandas import pandas as pd
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 X_train, y_train, X_test, y_test, X_val, y_val = None, None, None, None, None, None
