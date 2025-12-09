@@ -70,7 +70,7 @@ def vectorRepresentation_TFIDF(xtrain, xval, xtest):
     X_tfidf_val = vectorizer.transform(val_tweets)
     X_tfidf_test = vectorizer.transform(test_tweets)
     
-    return X_tfidf_train, X_tfidf_val, X_tfidf_test, vectorizer
+    return X_tfidf_train, X_tfidf_val, X_tfidf_test
 
 
 def vectorRepresentation_BERT(xtrain, xval, xtest):
@@ -168,11 +168,21 @@ if __name__ == "__main__":
     X_train, y_train = separate_x_y_vectors(train_data)
     X_val, y_val = separate_x_y_vectors(val_data)
     X_test, y_test = separate_x_y_vectors(test_data)
-    x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+    x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+    x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+    x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
 
     print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
     print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
     print ("Shape of TF-IDF test matrix: ", x_tfidf_test.shape)
-    print(x_tfidf_test)
+
+    print ("\nShape of BERT train matrix:", x_BERT_train.shape)
+    print ("Shape of BERT val matrix:  ", x_BERT_val.shape)
+    print ("Shape of BERT test matrix: ", x_BERT_test.shape)
+
+    print ("\nShape of Word2Vec train matrix:", x_word2vec_train.shape)
+    print ("Shape of Word2Vec val matrix:  ", x_word2vec_val.shape)
+    print ("Shape of Word2Vec test matrix: ", x_word2vec_test.shape)
+
 
 
