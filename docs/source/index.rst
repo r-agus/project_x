@@ -6,7 +6,7 @@
 Project X documentation
 =======================
 
-Welcome to the **Project X** documentation. This project analizes tweets from 
+Welcome to the **Project X** documentation. This project analyzes tweets from 
 the politicES dataset (with information from the Spanish political sphere, extracted
 from the X social network) and provides tools for data loading, text preprocessing, 
 and machine-learning models.
