@@ -60,10 +60,17 @@ from TextVectorRepresentation import load_data, divide_train_val_test, separate_
 from TextVectorRepresentation import vectorRepresentation_TFIDF
 from TextVectorRepresentation import vectorRepresentation_Word2Vec
 from TextVectorRepresentation import vectorRepresentation_BERT
+import numpy as np
 
 DATA_PATH = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 TEXT_COL = "tweet"
 TARGET_COL = "ideology_binary"  
+_COLUMN_MAP = {
+    "gender": 0,
+    "profession": 1,
+    "ideology_binary": 2,
+    "ideology_multiclass": 3
+}
 
 # To encode string labels into numbers
 def encode_labels(y_train, y_val, y_test):
@@ -247,33 +254,40 @@ def run_model_experiment(model_type, target_col, exp_name):
     """
     print(f"\n{model_type.upper()} EXPERIMENT: {exp_name}")
 
-    # Load dataset
-    data = load_data(DATA_PATH)
+ 
+    y_train_df = np.load("ProcessedData/y_train_30000.npy", allow_pickle=True)
+    y_val_df = np.load("ProcessedData/y_val_30000.npy", allow_pickle=True)
+    y_test_df = np.load("ProcessedData/y_test_30000.npy", allow_pickle=True)
 
-    # Divide into train, validation, test
-    train_df, val_df, test_df = divide_train_val_test(data)
-
-    # Separate X and y
-    X_train, y_train_df = separate_x_y_vectors(train_df)
-    X_val, y_val_df = separate_x_y_vectors(val_df)
-    X_test, y_test_df = separate_x_y_vectors(test_df)
 
     # Extract target column (ideology_binary or ideology_multiclass)
-    y_train = y_train_df[target_col]
-    y_val = y_val_df[target_col]
-    y_test = y_test_df[target_col]
-
+    y_train = y_train_df[:, _COLUMN_MAP[target_col]]
+    y_val = y_val_df[:, _COLUMN_MAP[target_col]]
+    y_test = y_test_df[:, _COLUMN_MAP[target_col]]
+    
     # Labels -> numbers (integers)
     y_train_enc, y_val_enc, y_test_enc, encoder = encode_labels(y_train, y_val, y_test)
 
     # TF-IDF vectorization
-    X_train_tfidf, X_val_tfidf, X_test_tfidf = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+    # Load preprocessed data splits
+    # X_train_tfidf, X_val_tfidf, X_test_tfidf = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+    X_train_tfidf = np.load("ProcessedData/x_tfidf_train_30000.npy")
+    X_val_tfidf = np.load("ProcessedData/x_tfidf_val_30000.npy")
+    X_test_tfidf = np.load("ProcessedData/x_tfidf_test_30000.npy")
+
+
 
     # WORD2VEC representation
-    X_train_w2v, X_val_w2v, X_test_w2v = build_word2vec(X_train, X_val, X_test)
+    # X_train_w2v, X_val_w2v, X_test_w2v = build_word2vec(X_train, X_val, X_test)
+    X_train_w2v = np.load("ProcessedData/x_word2vec_train_30000.npy")
+    X_val_w2v = np.load("ProcessedData/x_word2vec_val_30000.npy")
+    X_test_w2v = np.load("ProcessedData/x_word2vec_test_30000.npy")
 
     # BERT representation
-    X_train_bert, X_val_bert, X_test_bert = build_bert(X_train, X_val, X_test)
+    # X_train_bert, X_val_bert, X_test_bert = build_bert(X_train, X_val, X_test)
+    X_train_bert = np.load("ProcessedData/x_BERT_train_30000.npy")
+    X_val_bert = np.load("ProcessedData/x_BERT_val_30000.npy")
+    X_test_bert = np.load("ProcessedData/x_BERT_test_30000.npy")
 
 
     results = {}
