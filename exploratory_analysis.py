@@ -2,7 +2,7 @@
 # A neural network implemented in PyTorch.
 # At least one other Scikit-learn algorithm (for example, K-NN, SVM, Random Forest, Logistic Regression, etc.).
 
-"""Main module for data loading, exploration, and visualization.
+"""Module for data loading, exploration, and visualization.
 
 Provides functions to load data, print data information, analyze class distribution,
 preserve specific letters during text normalization, and generate word clouds.
