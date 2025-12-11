@@ -48,7 +48,7 @@ def separate_x_y_vectors(data: pd.DataFrame):
         data (pd.DataFrame): The dataset.
     '''
     X = data['tweet']
-    y = data.iloc[:, 1:-2]
+    y = data.iloc[:, 1:-1]
     return X, y
 
 
