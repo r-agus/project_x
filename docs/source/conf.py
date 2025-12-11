@@ -36,6 +36,8 @@ autodoc_mock_imports = [
     "pandas",
     "numpy",
     "sklearn",
+    "scipy",
+    "seaborn",
     "matplotlib",
     "wordcloud",
     "nltk",
@@ -46,6 +48,8 @@ autodoc_mock_imports = [
     "regex",
     "sentence_transformers",
     "gensim",
+    "TextVectorRepresentation",
+    "nn_pytorch",
 ]
 
 
@@ -79,3 +83,7 @@ intersphinx_mapping = {
 
 
 html_theme = "shibuya"
+
+# Ignore warnings about mocked imports so doctree builds stay clean when using
+# autodoc_mock_imports to avoid heavy ML dependencies during docs generation.
+suppress_warnings = ["autodoc.mocked_object"]
