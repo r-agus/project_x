@@ -18,7 +18,7 @@ from TextVectorRepresentation import (
     separate_x_y_vectors,
     divide_train_val_test
 )
-from main import load_data
+from exploratory_analysis import load_data
 
 
 # ============================
