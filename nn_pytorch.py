@@ -42,19 +42,20 @@ class NeuralNetwork(nn.Module):
         self.shared = nn.Sequential(
             nn.Linear(768, 1024),
             nn.BatchNorm1d(1024),
-            nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.GELU(),
+            nn.Dropout(0.2),
 
             nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.GELU(),
+            nn.Dropout(0.2),
 
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.2)
+            nn.GELU(),
+            nn.Dropout(0.1)
         )
+
 
 
         self.gender_head = nn.Linear(256, 2)
@@ -134,7 +135,7 @@ print(model)
 
 path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 data = load_data(path)
-n = 30000
+n = 3000
 data = data.sample(n=n, random_state=42)
 
 train_data, val_data, test_data = divide_train_val_test(data)
@@ -148,7 +149,7 @@ X_test, y_test = separate_x_y_vectors(test_data)
 #   BERT VECTORIZATION
 # ============================
 
-x_train, x_val, x_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+x_train, x_val, x_test = vectorRepresentation_BERT(X_train, X_val, X_test)
 
 y_train_mapped = map_politicES_labels(y_train.values)
 y_val_mapped = map_politicES_labels(y_val.values)
@@ -159,9 +160,14 @@ y_test_mapped = map_politicES_labels(y_test.values)
 #   DATA LOADERS
 # ============================
 
-x_train_dense = x_train.toarray()
-x_val_dense   = x_val.toarray()
-x_test_dense  = x_test.toarray()
+# x_train_dense = x_train.toarray()
+# x_val_dense   = x_val.toarray()
+# x_test_dense  = x_test.toarray()
+
+# For BERT embeddings, the output is already dense
+x_train_dense = x_train
+x_val_dense   = x_val
+x_test_dense  = x_test
 
 
 train_loader = DataLoader(

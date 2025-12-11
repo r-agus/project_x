@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from gensim.models import Word2Vec
 import re
 import unicodedata
+import os
 
 def load_data(file_path: str) -> pd.DataFrame:
     """Loads the dataset from a CSV file.
@@ -61,7 +62,7 @@ def vectorRepresentation_TFIDF(xtrain, xval, xtest):
     test_tweets = pd.Series(xtest).dropna().astype(str).tolist()
     
     vectorizer = TfidfVectorizer(
-        max_features=768,
+        max_features=5000,
         stop_words=list(stopwords),
         ngram_range=(1, 2)
     )
@@ -150,7 +151,11 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
         embeddings = []
         for tweet in tweets_data:
             tokens = preprocess_text(tweet)
-            tweet_embedding = np.mean([model.wv[token] for token in tokens if token in model.wv], axis=0)
+            valid_embeddings = [model.wv[token] for token in tokens if token in model.wv]
+            if valid_embeddings:
+                tweet_embedding = np.mean(valid_embeddings, axis=0)
+            else:
+                tweet_embedding = np.zeros(model.vector_size)
             embeddings.append(tweet_embedding)
         return np.array(embeddings)
     
@@ -161,16 +166,32 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
     return train_embeddings, val_embeddings, test_embeddings
 
 if __name__ == "__main__":
+
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = load_data(path)
-    data = data.head(100)  # O especifica el número de filas que necesites
+    data = data.sample(n=30000, random_state=42).reset_index(drop=True)
     train_data, val_data, test_data = divide_train_val_test(data)
     X_train, y_train = separate_x_y_vectors(train_data)
     X_val, y_val = separate_x_y_vectors(val_data)
     X_test, y_test = separate_x_y_vectors(test_data)
+    
     x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
     x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
     x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
+    
+    # Create directory if it doesn't exist
+    os.makedirs('ProcessedData', exist_ok=True)
+
+    # Save embeddings to files as .npy
+    np.save('ProcessedData/x_tfidf_train_30000.npy', x_tfidf_train.toarray() if hasattr(x_tfidf_train, 'toarray') else x_tfidf_train)
+    np.save('ProcessedData/x_tfidf_val_30000.npy', x_tfidf_val.toarray() if hasattr(x_tfidf_val, 'toarray') else x_tfidf_val)
+    np.save('ProcessedData/x_tfidf_test_30000.npy', x_tfidf_test.toarray() if hasattr(x_tfidf_test, 'toarray') else x_tfidf_test)
+    np.save('ProcessedData/x_BERT_train_30000.npy', x_BERT_train)
+    np.save('ProcessedData/x_BERT_val_30000.npy', x_BERT_val)
+    np.save('ProcessedData/x_BERT_test_30000.npy', x_BERT_test)
+    np.save('ProcessedData/x_word2vec_train_30000.npy', x_word2vec_train)
+    np.save('ProcessedData/x_word2vec_val_30000.npy', x_word2vec_val)
+    np.save('ProcessedData/x_word2vec_test_30000.npy', x_word2vec_test)
 
     print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
     print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
