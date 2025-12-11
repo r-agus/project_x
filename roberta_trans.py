@@ -2,55 +2,70 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trai
 from datasets import Dataset
 import pandas as pd
 import torch
+from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
 
+
+# ============================================================
+# PREPARAR DATASETS
+# ============================================================
 def prepare_gender_dataset(X_train, y_train, X_val, y_val, X_test, y_test,
                            model_id="cardiffnlp/twitter-xlm-roberta-base", max_length=128):
-    """
-    Prepara datasets para la columna 'Gender' con multiclass (male, female, non-binary).
-    Convierte labels a enteros.
-    """
+
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-    # Convertir a categoría y luego a códigos enteros
-    y_train = y_train['gender'].astype('category').cat.codes.reset_index(drop=True)
-    y_val = y_val['gender'].astype('category').cat.codes.reset_index(drop=True)
-    y_test = y_test['gender'].astype('category').cat.codes.reset_index(drop=True)
+    # Convertimos gender a números
+    y_train = y_train['gender'].astype('category')
+    y_val = y_val['gender'].astype('category')
+    y_test = y_test['gender'].astype('category')
 
-    label_map = dict(enumerate(y_train.astype('category').cat.categories)) if hasattr(y_train, 'cat') else None
+    label2id = {v: i for i, v in enumerate(y_train.cat.categories)}
+    id2label = {i: v for v, i in label2id.items()}
+
+    y_train = y_train.map(label2id).reset_index(drop=True)
+    y_val = y_val.map(label2id).reset_index(drop=True)
+    y_test = y_test.map(label2id).reset_index(drop=True)
 
     def create_dataset(X, y):
-        df = pd.DataFrame({"text": X}).reset_index(drop=True)
-        df['label'] = y
+        df = pd.DataFrame({"text": X})
+        df["label"] = y
         dataset = Dataset.from_pandas(df)
 
         def tokenize(batch):
-            encodings = tokenizer(batch["text"], truncation=True, padding="max_length", max_length=max_length)
-            encodings["labels"] = batch["label"]
-            return encodings
+            enc = tokenizer(
+                batch["text"],
+                truncation=True,
+                padding="max_length",
+                max_length=max_length
+            )
+            enc["labels"] = batch["label"]
+            return enc
 
         dataset = dataset.map(tokenize, batched=True)
-        dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
+        dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
         return dataset
 
-    train_dataset = create_dataset(X_train, y_train)
-    val_dataset = create_dataset(X_val, y_val)
-    test_dataset = create_dataset(X_test, y_test)
+    return (
+        tokenizer,
+        create_dataset(X_train, y_train),
+        create_dataset(X_val, y_val),
+        create_dataset(X_test, y_test),
+        len(label2id),
+        label2id,
+        id2label
+    )
 
-    num_labels = len(y_train.unique())
 
-    return tokenizer, train_dataset, val_dataset, test_dataset, num_labels
-
-
+# ============================================================
+# ENTRENAR MODELO
+# ============================================================
 def train_gender_model(train_dataset, val_dataset, num_labels,
                        model_id="cardiffnlp/twitter-xlm-roberta-base",
                        output_dir="./roberta_gender", epochs=3, batch_size=8, lr=2e-5):
-    """
-    Entrena RoBERTa para predecir la columna Gender.
-    """
+
     model = AutoModelForSequenceClassification.from_pretrained(
         model_id,
         num_labels=num_labels,
-        problem_type="single_label_classification"  # multiclass
+        problem_type="single_label_classification"
     )
 
     training_args = TrainingArguments(
@@ -59,10 +74,11 @@ def train_gender_model(train_dataset, val_dataset, num_labels,
         per_device_eval_batch_size=batch_size,
         learning_rate=lr,
         num_train_epochs=epochs,
-        logging_steps=20,
+        evaluation_strategy="epoch",
         save_strategy="epoch",
-        fp16=torch.cuda.is_available(),
-        report_to=[]
+        logging_steps=20,
+        report_to=[],
+        fp16=torch.cuda.is_available()
     )
 
     trainer = Trainer(
@@ -76,29 +92,52 @@ def train_gender_model(train_dataset, val_dataset, num_labels,
     return trainer, outputs
 
 
+# ============================================================
+# EVALUACIÓN COMPLETA
+# ============================================================
+def evaluate_model(trainer, test_dataset, id2label):
+    print("\n🔵 Evaluando en TEST SET...")
+
+    preds_output = trainer.predict(test_dataset)
+    
+    preds = preds_output.predictions.argmax(axis=1)
+    labels = preds_output.label_ids
+
+    print("\n📌 Accuracy:", accuracy_score(labels, preds))
+    print("📌 F1-macro:", f1_score(labels, preds, average="macro"))
+    print("📌 F1-weighted:", f1_score(labels, preds, average="weighted"))
+
+    print("\n📌 Classification Report:")
+    print(classification_report(labels, preds, target_names=[id2label[i] for i in range(len(id2label))]))
+
+    print("\n📌 Confusion Matrix:")
+    print(confusion_matrix(labels, preds))
+
+
+# ============================================================
+# MAIN
+# ============================================================
 if __name__ == "__main__":
     import TextVectorRepresentation as TV
 
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = TV.load_data(path)
-    data = data.head(500)  # Reducimos filas para pruebas
+    data = data.head(500)
 
-    # Dividir en train, val, test
     train_data, val_data, test_data = TV.divide_train_val_test(data)
 
-    # Separar X e y
     X_train, y_train = TV.separate_x_y_vectors(train_data)
     X_val, y_val = TV.separate_x_y_vectors(val_data)
     X_test, y_test = TV.separate_x_y_vectors(test_data)
 
-    # Preparar datasets
-    tokenizer, train_dataset, val_dataset, test_dataset, num_labels = prepare_gender_dataset(
+    tokenizer, train_ds, val_ds, test_ds, num_labels, label2id, id2label = prepare_gender_dataset(
         X_train, y_train, X_val, y_val, X_test, y_test
     )
 
-    # Entrenar
-    trainer, outputs = train_gender_model(train_dataset, val_dataset, num_labels)
+    trainer, outputs = train_gender_model(train_ds, val_ds, num_labels)
 
-    # Resultados
-    print("Training loss:", outputs.training_loss)
+    print("\nTraining loss:", outputs.training_loss)
     print("Global steps:", outputs.global_step)
+
+    # 🔥 EVALUACIÓN COMPLETA
+    evaluate_model(trainer, test_ds, id2label)
