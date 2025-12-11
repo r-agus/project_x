@@ -8,12 +8,31 @@ import os
 # ----------------------------
 # Función de métricas
 # ----------------------------
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
+import numpy as np
+
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
     preds = logits.argmax(axis=-1)
     acc = accuracy_score(labels, preds)
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="weighted")
-    return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1}
+    
+    # Calcular ROC-AUC si es binario o multilabel
+    try:
+        if len(np.unique(labels)) == 2:
+            # problema binario
+            probs = torch.softmax(torch.tensor(logits), dim=-1).numpy()[:,1]
+            roc_auc = roc_auc_score(labels, probs)
+        else:
+            # multiclase: usar one-vs-rest
+            probs = torch.softmax(torch.tensor(logits), dim=-1).numpy()
+            labels_onehot = np.eye(probs.shape[1])[labels]
+            roc_auc = roc_auc_score(labels_onehot, probs, average="weighted", multi_class="ovr")
+    except Exception as e:
+        print("No se pudo calcular ROC-AUC:", e)
+        roc_auc = None
+    
+    return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1, "roc_auc": roc_auc}
 
 # ----------------------------
 # Preparación de datasets para varias etiquetas
@@ -66,7 +85,7 @@ def prepare_multilabel_datasets(
 def train_model_for_label(train_dataset, val_dataset, num_labels,
                           model_id="cardiffnlp/twitter-xlm-roberta-base",
                           output_dir="./model_label",
-                          epochs=3, batch_size=8, lr=2e-5):
+                          epochs=3, batch_size=2, lr=2e-5):
     model = AutoModelForSequenceClassification.from_pretrained(
         model_id,
         num_labels=num_labels,
