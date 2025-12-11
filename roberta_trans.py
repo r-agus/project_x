@@ -80,7 +80,7 @@ def train_model_for_label(train_dataset, val_dataset, num_labels,
         learning_rate=lr,
         num_train_epochs=epochs,
         logging_steps=20,
-        save_strategy="epoch",   # guarda checkpoints cada epoch
+        save_strategy="epoch",
         fp16=torch.cuda.is_available(),
         report_to=[]
     )
@@ -147,7 +147,8 @@ if __name__ == "__main__":
             output_dir=f"./models/{label}"
         )
         trainers[label] = trainer
-        print(f"{label} - Training loss:", outputs.training_loss)
+        print(f"{label} - Best F1:", outputs["best_f1"])
+        print(f"{label} - Checkpoint guardado en:", outputs["best_checkpoint"])
 
         # Evaluación en test
         test_results = trainer.evaluate(datasets[label]["test"])
