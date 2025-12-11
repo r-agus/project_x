@@ -21,9 +21,9 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from nltk.corpus import stopwords as sw
-from init import xtrain, ytrain, xtest, ytest, xvalidation, yvalidation
-from stopwords import stopwords
-
+from init import get_data_splits
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def load_data(file_path: str) -> pd.DataFrame:
@@ -39,9 +39,6 @@ def load_data(file_path: str) -> pd.DataFrame:
     """
     data = pd.read_csv(file_path, header=0)
     return data
-
-# traindata = load_data('Datasets/EvaluationData/politicES_phase_2_train_public.csv')
-# ytrain = traindata.iloc[:, :]
 
 def print_data_info(ytrain: pd.DataFrame):
     """
@@ -69,44 +66,146 @@ def print_data_info(ytrain: pd.DataFrame):
     unique_users = ytrain.iloc[:, 0].unique()
     print("Unique users (labels) in training data:", len(unique_users))
 
-def analyze_class_distribution(ytrain: pd.DataFrame):
+def analyze_class_distribution(ytrain: pd.DataFrame, generate_plots: bool = False):
     """
-    Display how many examples belong to each class in the first column.
+    Display how many examples belong to each class in the training data (excluding user and tweet text columns).
+    
+    The training dataframe contains these headers:
+
+    +-----------------------+----------------------------------+
+    | Column                | Description                      |
+    +=======================+==================================+
+    | label                 | user identifier/label            |
+    +-----------------------+----------------------------------+
+    | gender                | gender classification            |
+    +-----------------------+----------------------------------+
+    | profession            | professional category            |
+    +-----------------------+----------------------------------+
+    | ideology_binary       | binary ideology classification   |
+    +-----------------------+----------------------------------+
+    | ideology_multiclass   | multi-class ideology             |
+    |                       | classification                   |
+    +-----------------------+----------------------------------+
+    | tweet                 | tweet text content               |
+    +-----------------------+----------------------------------+
+
+    The distribution of the training dataset is shown in the plot generated when
+    ``generate_plots`` is set to ``True``.
+
+    .. image:: _static/class_distribution.png
+        :alt: Class distribution plot
+        :width: 600px
 
     Args:
-        ytrain (pd.DataFrame): Training split whose first column contains labels.
+        ytrain (pd.DataFrame): Training split whose columns contain labels.
+        generate_plots (bool): Whether to generate a bar plot for class distribution, and save it as PNG.
 
     Returns:
         None
     """
-    class_counts = ytrain.iloc[:, 0].value_counts()
-    class_counts_unique = class_counts.nunique()
+    # Ensure ytrain is a DataFrame
+    if isinstance(ytrain, pd.Series):
+        ytrain = ytrain.to_frame()
 
-    if class_counts_unique == 1:
-        print("All classes have the same number of samples.")
-        print(f"Each class has {class_counts.iloc[0]} samples.")
-    else:
-        print("Class distribution in training data:")
-        # Group consecutive classes with same count
-        prev_count = None
-        start_cls = None
-        
-        for cls, count in class_counts.items():
-            if count != prev_count:
-                if prev_count is not None:
-                    if start_cls == prev_cls:
-                        print(f"  Classes {start_cls}: {prev_count} samples")
-                    else:
-                        print(f"  Classes {start_cls} to {prev_cls}: {prev_count} samples")
-                start_cls = cls
-                prev_count = count
-            prev_cls = cls
-        
-        # Print the last group
-        if start_cls == prev_cls:
-            print(f"  Classes {start_cls}: {prev_count} samples")
-        else:
-            print(f"  Classes {start_cls} to {prev_cls}: {prev_count} samples")
+    label_columns = ytrain.columns[:]
+
+    for col in label_columns:
+        class_counts = ytrain[col].value_counts().sort_index()
+        print(f"Class distribution for '{col}':")
+        for class_label, count in class_counts.items():
+            print(f"  Class '{class_label}': {count} examples")
+
+    if generate_plots:
+        # Generate a single bar plot for all label columns.
+        # Create separate groups for each label column with spacing
+        sns.set_theme(style="whitegrid")
+
+        df = (
+            ytrain[label_columns]
+            .melt(var_name="group", value_name="label")
+            .dropna()
+        )
+
+        counts = (
+            df.groupby(["group", "label"], sort=False)
+            .size()
+            .reset_index(name="count")
+            .reset_index(drop=True)
+        )
+
+        gap = 2.0
+        bar_w = 0.85
+        palette = dict(zip(label_columns, sns.color_palette("tab10", n_colors=len(label_columns))))
+
+        xticks = []
+        xticklabels = []
+        group_centers = {}
+
+        start = 0.0
+        fig, ax = plt.subplots(figsize=(14, 6))
+
+        for group in label_columns:
+            sub = counts[counts["group"] == group].reset_index(drop=True)
+            n = len(sub)
+            if n == 0:
+                continue
+
+            xs = start + np.arange(n)
+            ax.bar(xs, sub["count"].to_numpy(), width=bar_w, color=palette[group])
+
+            # per-bar tick labels
+            xticks.extend(xs.tolist())
+            xticklabels.extend(sub["label"].astype(str).tolist())
+
+            # count labels above bars
+            for x, c in zip(xs, sub["count"].to_numpy()):
+                ax.annotate(
+                    f"{int(c):,}",
+                    (x, c),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha="center",
+                    va="bottom",
+                    fontsize=9,
+                )
+
+            group_centers[group] = float(xs.mean())
+
+            if group != label_columns[-1]:
+                ax.axvline(xs[-1] + 0.5 + gap / 2, color="0.85", lw=1)
+
+            start = xs[-1] + 1 + gap
+
+        # Axis formatting (bar labels)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(xticklabels, rotation=25, ha="right")
+        ax.set_xlabel("")
+        ax.set_ylabel("Number of Examples")
+        ax.set_title("Class Distribution Across Label Columns")
+
+        # Second bottom axis for group names (avoids overlap)
+        ax_group = ax.twiny()
+        ax_group.set_xlim(ax.get_xlim())
+
+        ax_group.xaxis.set_ticks_position("bottom")
+        ax_group.xaxis.set_label_position("bottom")
+
+        # push group labels below the per-bar labels
+        ax_group.spines["bottom"].set_position(("outward", 55))
+        ax_group.spines["top"].set_visible(False)
+        ax_group.spines["bottom"].set_visible(False)  # hide extra line
+
+        centers = [group_centers[g] for g in label_columns if g in group_centers]
+        labels = [g for g in label_columns if g in group_centers]
+        ax_group.set_xticks(centers)
+        ax_group.set_xticklabels(labels, fontweight="bold")
+        ax_group.tick_params(axis="x", length=0, pad=2)
+
+        plt.subplots_adjust(bottom=0.22)
+
+        plt.tight_layout()
+        plt.savefig("class_distribution.png", dpi=200, bbox_inches="tight")
+        plt.show()
 
 def preserve_letters(text: str, letters: list) -> str:
     """
@@ -136,7 +235,7 @@ def preserve_letters(text: str, letters: list) -> str:
         text = text.replace(v, k)
     return text
 
-def generate_wordcloud(ytrain: pd.DataFrame):
+def generate_wordcloud(xtrain: pd.DataFrame):
     """
     Build a word cloud from the tweet column and print frequency diagnostics.
 
@@ -145,14 +244,18 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     renders a matplotlib word cloud to visually inspect common terms in the
     disinformation dataset.
 
+    .. image:: _static/wordcloud.png
+        :alt: Class distribution plot
+        :width: 600px
+
     Args:
-        ytrain (pd.DataFrame): Dataset containing tweets in the last column.
+        xtrain (pd.DataFrame): Single-column dataframe with tweet texts.
 
     Returns:
         WordCloud: The generated word cloud object.
     """
     # Print most frequent words in the tweets, word cloud and examples by class
-    all_text = ' '.join(ytrain.iloc[:, -1].dropna().astype(str).tolist())
+    all_text = ' '.join(xtrain.dropna().astype(str).tolist())
     words = all_text.lower().split()
     # Remove punctuation from words
     tokens = preserve_letters(all_text.lower(), ['ñ', 'Ñ'])
@@ -203,16 +306,17 @@ def generate_wordcloud(ytrain: pd.DataFrame):
     return wordcloud
 
 if __name__ == "__main__":
+    xtrain, ytrain, *_ = get_data_splits()
     print(f"{'-' * 35}")
-    analyze_class_distribution(ytrain)
+    analyze_class_distribution(ytrain, generate_plots=True)
     print(f"{'-' * 35}")
     # Print text length statistics (from tweets column, which corresponds to the last column)
-    text_lengths = ytrain.iloc[:, -1].dropna().apply(len)
+    text_lengths = xtrain.dropna().apply(len)
     print("Text length statistics:")
     print(f"  Minimum length: {text_lengths.min()}")
     print(f"  Maximum length: {text_lengths.max()}")
     print(f"  Average length: {text_lengths.mean():.2f}")
     print(f"  Median length: {text_lengths.median()}")
     print(f"{'-' * 35}")
-    wordcloud = generate_wordcloud(ytrain)
+    wordcloud = generate_wordcloud(xtrain)
     wordcloud.to_file("wordcloud.png")
