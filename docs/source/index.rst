@@ -70,4 +70,7 @@ stopwords
    :caption: Additional guides
 
    project_overview
+   exploratory_analysis
+   text_vector_rep
+   evaluation
 
