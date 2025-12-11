@@ -207,9 +207,6 @@ def analyze_class_distribution(ytrain: pd.DataFrame, generate_plots: bool = Fals
         plt.savefig("class_distribution.png", dpi=200, bbox_inches="tight")
         plt.show()
 
-
-
-
 def preserve_letters(text: str, letters: list) -> str:
     """
     Normalize a text string while preserving specific characters (e.g., ``ñ``).
@@ -246,6 +243,10 @@ def generate_wordcloud(xtrain: pd.DataFrame):
     removes stopwords, saves frequency CSV artifacts for later inspection, and
     renders a matplotlib word cloud to visually inspect common terms in the
     disinformation dataset.
+
+    .. image:: _static/wordcloud.png
+        :alt: Class distribution plot
+        :width: 600px
 
     Args:
         xtrain (pd.DataFrame): Single-column dataframe with tweet texts.
