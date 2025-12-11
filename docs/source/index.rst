@@ -28,10 +28,10 @@ Install dependencies from the repository root::
 Modules
 -------
 
-main
-~~~~
+exploratory_analysis
+~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: main
+.. automodule:: exploratory_analysis
    :members:
    :undoc-members:
    :show-inheritance:
