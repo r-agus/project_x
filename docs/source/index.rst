@@ -11,6 +11,9 @@ the politicES dataset (with information from the Spanish political sphere, extra
 from the X social network) and provides tools for data loading, text preprocessing, 
 and machine-learning models.
 
+This page contains technical documentation for the codebase, including module references
+and usage instructions. Conclusions can be found on pages linked in the "Additional guides" section.
+
 .. contents:: Table of Contents
    :local:
    :depth: 2
