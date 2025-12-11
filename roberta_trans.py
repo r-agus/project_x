@@ -80,10 +80,7 @@ def train_model_for_label(train_dataset, val_dataset, num_labels,
         learning_rate=lr,
         num_train_epochs=epochs,
         logging_steps=20,
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
-        load_best_model_at_end=True,
-        metric_for_best_model="f1",
+        save_strategy="epoch",   # guarda checkpoints cada epoch
         fp16=torch.cuda.is_available(),
         report_to=[]
     )
@@ -96,8 +93,25 @@ def train_model_for_label(train_dataset, val_dataset, num_labels,
         compute_metrics=compute_metrics
     )
 
-    outputs = trainer.train()
-    return trainer, outputs
+    best_f1 = 0
+    best_checkpoint = None
+
+    for epoch in range(epochs):
+        print(f"\n--- Epoch {epoch+1}/{epochs} ---")
+        trainer.train()
+        metrics = trainer.evaluate(val_dataset)
+        print(f"Validation metrics: {metrics}")
+
+        # Guardar manualmente el mejor modelo según F1
+        if metrics["eval_f1"] > best_f1:
+            best_f1 = metrics["eval_f1"]
+            best_checkpoint = os.path.join(output_dir, f"best_model_epoch_{epoch+1}")
+            trainer.save_model(best_checkpoint)
+            print(f"Best model updated at epoch {epoch+1} with F1={best_f1:.4f}")
+
+    print(f"\nTraining finished. Best F1: {best_f1:.4f}")
+    return trainer, {"best_f1": best_f1, "best_checkpoint": best_checkpoint}
+
 
 # ----------------------------
 # Bloque principal
