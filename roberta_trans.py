@@ -80,7 +80,7 @@ def train_model_for_label(train_dataset, val_dataset, num_labels,
         learning_rate=lr,
         num_train_epochs=epochs,
         logging_steps=20,
-        save_strategy="epoch",
+        save_strategy="no",
         fp16=torch.cuda.is_available(),
         report_to=[]
     )
