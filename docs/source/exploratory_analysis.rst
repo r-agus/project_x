@@ -30,3 +30,10 @@ The class distribution is shown in the histogram below, where it can be seen tha
    :alt: Histogram of Ideological Polarization Scores
    :width: 600px
    :align: center
+
+A preliminary text analysis is performed, including a word cloud visualization of the most frequent words in the tweets, which can be seen below.
+
+.. image:: _static/wordcloud.png
+   :alt: Word Cloud of Most Frequent Words
+   :width: 600px
+   :align: center
