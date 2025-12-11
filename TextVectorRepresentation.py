@@ -1,3 +1,59 @@
+"""
+Text Vector Representation Utilities
+====================================
+
+This module provides a unified collection of functions for generating text 
+representations used in machine-learning experiments. It implements several 
+commonly used embedding strategies and the preprocessing tools they rely on.
+
+The module includes the following functionality:
+
+Data Handling
+-------------
+- **load_data(path)**  
+  Loads a dataset from CSV into a Pandas DataFrame.
+
+- **divide_train_val_test(df)**  
+  Splits a dataset into train/validation/test subsets following fixed proportions.
+
+- **separate_x_y_vectors(df)**  
+  Extracts feature text (tweets) and associated label columns.
+
+Text Preprocessing
+------------------
+- **preserve_letters(text)**  
+  Preserves specific language-sensitive characters (e.g., 'ñ') during unicode 
+  normalization.
+
+- **preprocess_text(text)**  
+  Performs lowercasing, accent handling, punctuation removal and stopword filtering
+  to prepare text for token-based embeddings.
+
+Vectorization Methods
+---------------------
+- **TF-IDF Representation**: ``vectorRepresentation_TFIDF(xtrain, xval, xtest)``  
+  Generates sparse TF-IDF matrices for train, validation and test sets using a 
+  consistent vectorizer. Suitable for linear models.
+
+- **BERT Sentence Embeddings**: ``vectorRepresentation_BERT(xtrain, xval, xtest)``  
+  Uses *bert-base-multilingual-cased* from HuggingFace Transformers to compute 
+  tweet embeddings via mean pooling over token embeddings.
+
+- **Word2Vec Embeddings**: ``vectorRepresentation_Word2Vec(xtrain, xval, xtest)``  
+  Trains a Word2Vec model on the training corpus and generates dense vector 
+  representations by averaging token embeddings for each tweet. Handles tweets 
+  with no valid vocabulary tokens by returning zero vectors.
+
+Design Notes
+------------
+- All vectorization functions ensure that train/validation/test splits are processed 
+  consistently and independently.
+- Heavy external models (e.g., BERT) are instantiated inside functions to avoid 
+  loading them unnecessarily.
+- The module is intentionally self-contained so that other parts of the project can 
+  call any representation method interchangeably.
+"""
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from stopwords import stopwords
 import pandas as pd
@@ -9,6 +65,7 @@ from sklearn.model_selection import train_test_split
 from gensim.models import Word2Vec
 import re
 import unicodedata
+import os
 
 def load_data(file_path: str) -> pd.DataFrame:
     """Loads the dataset from a CSV file.
@@ -74,13 +131,20 @@ def vectorRepresentation_TFIDF(xtrain, xval, xtest):
 
 
 def vectorRepresentation_BERT(xtrain, xval, xtest):
-    '''
+    """
     Function to obtain BERT embeddings for tweets in train, validation, and test sets.
-    '''
+    """
     tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
     model = BertModel.from_pretrained('bert-base-multilingual-cased')
     
     def get_embeddings(tweets_data):
+
+        """
+        Converts a list of tweets into BERT-based sentence embeddings.
+        Tokenizes text, runs it through a pretrained multilingual BERT model,
+        and returns mean-pooled embeddings for each tweet.
+        """
+
         tweets = pd.Series(tweets_data).dropna().astype(str).tolist()
         inputs = tokenizer(
             tweets,
@@ -147,10 +211,20 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
         pass
     
     def get_word2vec_embeddings(tweets_data):
+        """
+        Converts a list of tweets into BERT-based sentence embeddings.
+        Tokenizes text, runs it through a pretrained multilingual BERT model,
+        and returns mean-pooled embeddings for each tweet.
+        """
+        
         embeddings = []
         for tweet in tweets_data:
             tokens = preprocess_text(tweet)
-            tweet_embedding = np.mean([model.wv[token] for token in tokens if token in model.wv], axis=0)
+            token_vecs = [model.wv[token] for token in tokens if token in model.wv]
+            if len(token_vecs) > 0:
+                tweet_embedding = np.mean(token_vecs, axis=0)
+            else:
+                tweet_embedding = np.zeros(model.vector_size)
             embeddings.append(tweet_embedding)
         return np.array(embeddings)
     
@@ -161,6 +235,7 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
     return train_embeddings, val_embeddings, test_embeddings
 
 if __name__ == "__main__":
+
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = load_data(path)
     data = data.head(1000)  # O especifica el número de filas que necesites
@@ -168,9 +243,24 @@ if __name__ == "__main__":
     X_train, y_train = separate_x_y_vectors(train_data)
     X_val, y_val = separate_x_y_vectors(val_data)
     X_test, y_test = separate_x_y_vectors(test_data)
+    
     x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
     x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
     x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
+    
+    # Create directory if it doesn't exist
+    os.makedirs('ProcessedData', exist_ok=True)
+
+    # Save embeddings to files as .npy
+    np.save('ProcessedData/x_tfidf_train_30000.npy', x_tfidf_train.toarray() if hasattr(x_tfidf_train, 'toarray') else x_tfidf_train)
+    np.save('ProcessedData/x_tfidf_val_30000.npy', x_tfidf_val.toarray() if hasattr(x_tfidf_val, 'toarray') else x_tfidf_val)
+    np.save('ProcessedData/x_tfidf_test_30000.npy', x_tfidf_test.toarray() if hasattr(x_tfidf_test, 'toarray') else x_tfidf_test)
+    np.save('ProcessedData/x_BERT_train_30000.npy', x_BERT_train)
+    np.save('ProcessedData/x_BERT_val_30000.npy', x_BERT_val)
+    np.save('ProcessedData/x_BERT_test_30000.npy', x_BERT_test)
+    np.save('ProcessedData/x_word2vec_train_30000.npy', x_word2vec_train)
+    np.save('ProcessedData/x_word2vec_val_30000.npy', x_word2vec_val)
+    np.save('ProcessedData/x_word2vec_test_30000.npy', x_word2vec_test)
 
     print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
     print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
@@ -183,6 +273,3 @@ if __name__ == "__main__":
     print ("\nShape of Word2Vec train matrix:", x_word2vec_train.shape)
     print ("Shape of Word2Vec val matrix:  ", x_word2vec_val.shape)
     print ("Shape of Word2Vec test matrix: ", x_word2vec_test.shape)
-
-
-
