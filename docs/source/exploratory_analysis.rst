@@ -37,3 +37,16 @@ A preliminary text analysis is performed, including a word cloud visualization o
    :alt: Word Cloud of Most Frequent Words
    :width: 600px
    :align: center
+
+Hypothesis
+----------
+
+Based on the exploratory analysis, we hypothesize that there is a significant correlation between the ideological polarization of users and the prevalence of disinformation content in their tweets. Specifically, we expect that users with extreme ideological positions (both left and right) are more likely to share disinformation compared to those with moderate views.
+
+In relation to machine learning models, we hypothesize that models incorporating contextual embeddings will outperform traditional bag-of-words or TF-IDF representations in classifying tweets based on ideological polarization and disinformation content.
+
+Logistic Regression and SVM models should perform in a comparable manner, with potential slight advantages for SVM in handling high-dimensional data. However, the performance gap between these traditional models and deep learning approaches (e.g., LSTM, BERT) is expected to be more pronounced, with deep learning models likely achieving higher accuracy due to their ability to capture complex semantic relationships in the text data.
+
+It is expected to obtain better results when classifying `ideology_binary` compared to `ideology_multiclass`, given the increased complexity of distinguishing between multiple classes. Furthermore, it is expected to achieve higher accuracy at political ideology classification compared to gender or profession classification, as ideological polarization is more directly reflected in tweet content.
+
+BERTopic should outperform KMeans clustering in topic discovery tasks, given its ability to automatically determine the optimal number of topics and capture more nuanced thematic structures in the data.
