@@ -65,6 +65,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import sys
+import os
 
 DATA_PATH = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 TEXT_COL = "tweet"
@@ -356,6 +357,8 @@ def run_model_experiment(model_type, target_col, exp_name):
 results = []
 if __name__ == "__main__":
     output_file = "Results/evaluation_results_sklearn.txt"
+    if not os.path.exists("Results"):
+        os.makedirs("Results")
     sys.stdout = open(output_file, "w", encoding="utf-8")
     results = []
 
