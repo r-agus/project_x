@@ -357,8 +357,7 @@ def run_model_experiment(model_type, target_col, exp_name):
 results = []
 if __name__ == "__main__":
     output_file = "Results/evaluation_results_sklearn.txt"
-    if not os.path.exists("Results"):
-        os.makedirs("Results")
+    os.makedirs("Results", exist_ok=True)
     sys.stdout = open(output_file, "w", encoding="utf-8")
     results = []
 
