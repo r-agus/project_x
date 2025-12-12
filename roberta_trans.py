@@ -140,7 +140,8 @@ if __name__ == "__main__":
 
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = TV.load_data(path)
-
+    data  = data.sample(n=30000, random_state=42).reset_index()
+    
     train_data, val_data, test_data = TV.divide_train_val_test(data)
     X_train, y_train = TV.separate_x_y_vectors(train_data)
     X_val, y_val = TV.separate_x_y_vectors(val_data)
