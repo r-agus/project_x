@@ -32,30 +32,29 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_TFIDF_logreg.png
+.. figure:: _static/LogReg_TFIDF/confusion_matrix_gender_TFIDF_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Logistic Regression + TF-IDF).
 
-.. figure:: _static/confusion_matrix_prof_TFIDF_logreg.png
+.. figure:: _static/LogReg_TFIDF/confusion_matrix_prof_TFIDF_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Logistic Regression + TF-IDF).
 
-.. figure:: _static/confusion_matrix_ideology_bin_TFIDF_logreg.png
+.. figure:: _static/LogReg_TFIDF/confusion_matrix_ideology_bin_TFIDF_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Logistic Regression + TF-IDF).
 
-.. figure:: _static/confusion_matrix_ideology_multi_TFIDF_logreg.png
+.. figure:: _static/LogReg_TFIDF/confusion_matrix_ideology_multi_TFIDF_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for multiclass ideology classification (Logistic Regression + TF-IDF).
-
 
 LogReg + Word2Vec 
 ^^^^^^^^^^^^^^^^^^^
@@ -84,25 +83,25 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_w2v_logreg.png
+.. figure:: _static/LogReg_w2v/confusion_matrix_gender_w2v_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Logistic Regression + Word2Vec).
 
-.. figure:: _static/confusion_matrix_prof_w2v_logreg.png
+.. figure:: _static/LogReg_w2v/confusion_matrix_prof_w2v_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Logistic Regression + Word2Vec).
 
-.. figure:: _static/confusion_matrix_ideology_bin_w2v_logreg.png
+.. figure:: _static/LogReg_w2v/confusion_matrix_ideology_bin_w2v_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Logistic Regression + Word2Vec).
 
-.. figure:: _static/confusion_matrix_ideology_multi_w2v_logreg.png
+.. figure:: _static/LogReg_w2v/confusion_matrix_ideology_multi_w2v_logreg.png
    :width: 60%
    :align: center
 
@@ -135,25 +134,25 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_BERT_logreg.png
+.. figure:: _static/LogReg_BERT/confusion_matrix_gender_BERT_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Logistic Regression + BERT).
 
-.. figure:: _static/confusion_matrix_prof_BERT_logreg.png
+.. figure:: _static/LogReg_BERT/confusion_matrix_prof_BERT_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Logistic Regression + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_bin_BERT_logreg.png
+.. figure:: _static/LogReg_BERT/confusion_matrix_ideology_bin_BERT_logreg.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Logistic Regression + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_multi_BERT_logreg.png
+.. figure:: _static/LogReg_BERT/confusion_matrix_ideology_multi_BERT_logreg.png
    :width: 60%
    :align: center
 
@@ -186,25 +185,25 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_TFIDF_svm.png
+.. figure:: _static/SVM_TFIDF/confusion_matrix_gender_TFIDF_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Linear SVM + TF-IDF).
 
-.. figure:: _static/confusion_matrix_prof_TFIDF_svm.png
+.. figure:: _static/SVM_TFIDF/confusion_matrix_prof_TFIDF_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Linear SVM + TF-IDF).
 
-.. figure:: _static/confusion_matrix_ideology_bin_TFIDF_svm.png
+.. figure:: _static/SVM_TFIDF/confusion_matrix_ideology_bin_TFIDF_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Linear SVM + TF-IDF).
 
-.. figure:: _static/confusion_matrix_ideology_multi_TFIDF_svm.png
+.. figure:: _static/SVM_TFIDF/confusion_matrix_ideology_multi_TFIDF_svm.png
    :width: 60%
    :align: center
 
@@ -236,25 +235,25 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_w2v_svm.png
+.. figure:: _static/SVM_w2v/confusion_matrix_gender_w2v_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Linear SVM + Word2Vec).
 
-.. figure:: _static/confusion_matrix_prof_w2v_svm.png
+.. figure:: _static/SVM_w2v/confusion_matrix_prof_w2v_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Linear SVM + Word2Vec).
 
-.. figure:: _static/confusion_matrix_ideology_bin_w2v_svm.png
+.. figure:: _static/SVM_w2v/confusion_matrix_ideology_bin_w2v_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Linear SVM + Word2Vec).
 
-.. figure:: _static/confusion_matrix_ideology_multi_w2v_svm.png
+.. figure:: _static/SVM_w2v/confusion_matrix_ideology_multi_w2v_svm.png
    :width: 60%
    :align: center
 
@@ -287,25 +286,25 @@ Evaluation results
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_BERT_svm.png
+.. figure:: _static/SVM_BERT/confusion_matrix_gender_BERT_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for gender classification (Linear SVM + BERT).
 
-.. figure:: _static/confusion_matrix_prof_BERT_svm.png
+.. figure:: _static/SVM_BERT/confusion_matrix_prof_BERT_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for profession classification (Linear SVM + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_bin_BERT_svm.png
+.. figure:: _static/SVM_BERT/confusion_matrix_ideology_bin_BERT_svm.png
    :width: 60%
    :align: center
 
    Confusion matrix for binary ideology classification (Linear SVM + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_multi_BERT_svm.png
+.. figure:: _static/SVM_BERT/confusion_matrix_ideology_multi_BERT_svm.png
    :width: 60%
    :align: center
 
@@ -338,41 +337,40 @@ The following table reports the test performance (accuracy and macro F1-score) o
 +-------------------------+----------------------+----------+----------+
 
 Confusion matrices
-"""""""""""""""""""
+""""""""""""""""""
 
-.. figure:: _static/Confusion_matrix_gender_tfidf.png
+.. figure:: _static/NN_TFIDF/Confusion_matrix_gender_tfidf.png
    :width: 60%
    :align: center
 
-   Confusion matrix for gender (TF-IDF + neural network).
+   Confusion matrix for gender classification (NN + TF-IDF).
 
-.. figure:: _static/Confusion_matrix_prof_tfidf.png
+.. figure:: _static/NN_TFIDF/Confusion_matrix_prof_tfidf.png
    :width: 60%
    :align: center
 
-   Confusion matrix for profession (TF-IDF + neural network).
+   Confusion matrix for profession classification (NN + TF-IDF).
 
-.. figure:: _static/Confusion_matrix_ideology_bin_tfidf.png
+.. figure:: _static/NN_TFIDF/Confusion_matrix_ideology_bin_tfidf.png
    :width: 60%
    :align: center
 
-   Confusion matrix for binary ideology (TF-IDF + neural network).
+   Confusion matrix for binary ideology classification (NN + TF-IDF).
 
-.. figure:: _static/Confusion_matrix_ideology_multi_tfidf.png
+.. figure:: _static/NN_TFIDF/Confusion_matrix_ideology_multi_tfidf.png
    :width: 60%
    :align: center
 
-   Confusion matrix for multiclass ideology (TF-IDF + neural network).
+   Confusion matrix for multiclass ideology classification (NN + TF-IDF).
 
 Training and validation loss
 """""""""""""""""""""""""""""
 
-.. figure:: _static/Train_vs_validation_nn_tfidf.png
+.. figure:: _static/NN_TFIDF/Train_vs_validation_nn_tfidf.png
    :width: 80%
    :align: center
 
    Training vs validation loss across epochs for the TF-IDF neural network.
-
 
 NN (PyTorch) + Word2Vec
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -394,34 +392,34 @@ The following table reports the test performance (accuracy and macro F1-score) o
 Confusion matrices
 """"""""""""""""""
 
-.. figure:: _static/confussion_matrix_gender_w2v.png
+.. figure:: _static/NN_w2v/confussion_matrix_gender_w2v.png
    :width: 60%
    :align: center
 
-   Confusion matrix for gender (Word2Vec + neural network).
+   Confusion matrix for gender classification (NN + Word2Vec).
 
-.. figure:: _static/confussion_matrix_profession_w2v.png
+.. figure:: _static/NN_w2v/confussion_matrix_profession_w2v.png
    :width: 60%
    :align: center
 
-   Confusion matrix for profession (Word2Vec + neural network).
+   Confusion matrix for profession classification (NN + Word2Vec).
 
-.. figure:: _static/confussion_matrix_ideology_bin_w2v.png
+.. figure:: _static/NN_w2v/confussion_matrix_ideology_bin_w2v.png
    :width: 60%
    :align: center
 
-   Confusion matrix for binary ideology (Word2Vec + neural network).
+   Confusion matrix for binary ideology classification (NN + Word2Vec).
 
-.. figure:: _static/confussion_matrix_ideology_multi_w2v.png
+.. figure:: _static/NN_w2v/confussion_matrix_ideology_multi_w2v.png
    :width: 60%
    :align: center
 
-   Confusion matrix for multiclass ideology (Word2Vec + neural network).
+   Confusion matrix for multiclass ideology classification (NN + Word2Vec).
 
 Training and validation loss
 """""""""""""""""""""""""""""
 
-.. figure:: _static/train_vs_val_loss.png
+.. figure:: _static/NN_w2v/train_vs_val_loss.png
    :width: 80%
    :align: center
 
@@ -444,37 +442,37 @@ The following table reports the test performance (accuracy and macro F1-score) o
 +------------------------+----------------------+----------+----------+
 
 Confusion matrices
-"""""""""""""""""""""""""""""
+""""""""""""""""""
 
-.. figure:: _static/confusion_matrix_gender_bert.png
+.. figure:: _static/NN_BERT/confusion_matrix_gender_bert.png
    :width: 60%
    :align: center
 
-   Confusion matrix for gender (BERT + neural network).
+   Confusion matrix for gender classification (NN + BERT).
 
-.. figure:: _static/confusion_matrix_prof_bert.png
+.. figure:: _static/NN_BERT/confusion_matrix_prof_bert.png
    :width: 60%
    :align: center
 
-   Confusion matrix for profession (BERT + neural network).
+   Confusion matrix for profession classification (NN + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_bin_bert.png
+.. figure:: _static/NN_BERT/confusion_matrix_ideology_bin_bert.png
    :width: 60%
    :align: center
 
-   Confusion matrix for binary ideology (BERT + neural network).
+   Confusion matrix for binary ideology classification (NN + BERT).
 
-.. figure:: _static/confusion_matrix_ideology_multi_bert.png
+.. figure:: _static/NN_BERT/confusion_matrix_ideology_multi_bert.png
    :width: 60%
    :align: center
 
-   Confusion matrix for multiclass ideology (BERT + neural network).
+   Confusion matrix for multiclass ideology classification (NN + BERT).
 
 Training and validation loss
 """""""""""""""""""""""""""""
 
-.. figure:: _static/train_vs_validation_loss.png
+.. figure:: _static/NN_BERT/train_vs_validation_loss.png
    :width: 80%
    :align: center
 
-   Training vs validation loss across epochs for the BERT neural network.
+   Training vs validation loss across epochs for the BERT-based neural network.
