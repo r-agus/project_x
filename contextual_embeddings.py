@@ -68,7 +68,7 @@ if __name__ == "__main__":
     import TextVectorRepresentation as TV
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = TV.load_data(path)
-    data = data.head(2000)  # O especifica el número de filas que necesites
+    data = data.head(10000)  # O especifica el número de filas que necesites
     train_data, val_data, test_data = TV.divide_train_val_test(data)
     X_train, y_train = TV.separate_x_y_vectors(train_data)
     X_val, y_val = TV.separate_x_y_vectors(val_data)
