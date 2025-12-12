@@ -141,7 +141,6 @@ if __name__ == "__main__":
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = TV.load_data(path)
 
-
     train_data, val_data, test_data = TV.divide_train_val_test(data)
     X_train, y_train = TV.separate_x_y_vectors(train_data)
     X_val, y_val = TV.separate_x_y_vectors(val_data)
@@ -157,6 +156,8 @@ if __name__ == "__main__":
     os.makedirs("./models", exist_ok=True)
 
     trainers = {}
+    all_results = {}  # Aquí guardaremos todas las métricas
+
     for label in labels:
         print(f"\nEntrenando modelo para {label}...")
         trainer, outputs = train_model_for_label(
@@ -172,3 +173,17 @@ if __name__ == "__main__":
         # Evaluación en test
         test_results = trainer.evaluate(datasets[label]["test"])
         print(f"{label} - Test metrics:", test_results)
+
+        # Guardar métricas en el diccionario
+        all_results[label] = {
+            "best_f1": outputs["best_f1"],
+            "best_checkpoint": outputs["best_checkpoint"],
+            "test_metrics": test_results
+        }
+
+    # Guardar todas las métricas en un JSON
+    results_path = "./models/results.json"
+    with open(results_path, "w") as f:
+        json.dump(all_results, f, indent=4)
+
+    print(f"\nTodas las métricas guardadas en {results_path}")
