@@ -208,5 +208,3 @@ Training and validation loss
    :align: center
 
    Training vs validation loss across epochs for the BERT neural network.
-
-
