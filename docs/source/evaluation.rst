@@ -44,7 +44,7 @@ The following table summarizes the test performance (accuracy and macro F1-score
 PyTorch neural network
 ----------------------
 
-In addition to the scikit-learn baselines, we implement a feedforward neural network using PyTorch. This model operates directly on 768-dimensional BERT embeddings computed from the tweet text by the ``TextVectorRepresentation`` module, which act as dense, context-aware document vectors.
+In addition to the scikit-learn baselines, we implement a feedforward neural network using PyTorch. This model operates on fixed-size dense input vectors computed from the tweet text by the ``TextVectorRepresentation`` module (e.g. TF-IDF or BERT-based embeddings), which act as document-level representations.
 
 The architecture is a simple multilayer perceptron: the input embedding is flattened and passed through two fully connected layers of sizes 512 and 256 with ReLU activations, followed by a final linear layer with 4 outputs. These outputs correspond to the four classification tasks defined in the politicES dataset: gender, profession, binary ideology and multiclass ideology. In this way, the network is trained in a multi-task setting, learning a shared representation of the tweet that is useful for all targets simultaneously.
 
@@ -53,3 +53,52 @@ Labels are constructed by mapping the raw string annotations from the dataset (g
 Evaluation results for the PyTorch neural network
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The table below reports the test performance (accuracy and macro F1-score) of the PyTorch neural network for the different prediction tasks in the politicES dataset.
+
+
++-------------------------+----------------------+----------+----------+
+| Model                   | Task                 | Accuracy | F1-macro |
++=========================+======================+==========+==========+
+| NN (PyTorch) + TF-IDF   | Gender               | 0.6473   | 0.5858   |
++-------------------------+----------------------+----------+----------+
+| NN (PyTorch) + TF-IDF   | Profession           | 0.6998   | 0.4687   |
++-------------------------+----------------------+----------+----------+
+| NN (PyTorch) + TF-IDF   | Binary ideology      | 0.6242   | 0.6124   |
++-------------------------+----------------------+----------+----------+
+| NN (PyTorch) + TF-IDF   | Multiclass ideology  | 0.4404   | 0.3634   |
++-------------------------+----------------------+----------+----------+
+
+Confusion matrices (TF-IDF + neural network)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/Confusion_matrix_gender_tfidf.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender (TF-IDF + neural network).
+
+.. figure:: _static/Confusion_matrix_prof_tfidf.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession (TF-IDF + neural network).
+
+.. figure:: _static/Confusion_matrix_ideology_bin_tfidf.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology (TF-IDF + neural network).
+
+.. figure:: _static/Confusion_matrix_ideology_multi_tfidf.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology (TF-IDF + neural network).
+
+Training and validation loss (TF-IDF + neural network)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/Train_vs_validation_nn_tfidf.png
+   :width: 80%
+   :align: center
+
+   Training vs validation loss across epochs for the TF-IDF neural network.
