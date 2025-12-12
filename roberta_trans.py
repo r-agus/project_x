@@ -1,64 +1,190 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer
-from init import xtrain, ytrain
-from pandas import pandas as pd
 from datasets import Dataset
+import pandas as pd
+import torch
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+import os
 
-# TRANSFORMERS LA PELÍCULA 
-model_id = "cardiffnlp/twitter-xlm-roberta-base"
+# ----------------------------
+# Función de métricas
+# ----------------------------
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
+import numpy as np
 
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-
-df = pd.DataFrame({
-    "tweet": xtrain,
-    "labels": ytrain
-}).dropna()
-
-# Si labels NO son números, conviértelos:
-if df["labels"].dtype == "object":
-    df["labels"] = df["labels"].astype("category").cat.codes
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    preds = logits.argmax(axis=-1)
+    acc = accuracy_score(labels, preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average="weighted")
     
-dataset = Dataset.from_pandas(df)
+    # Calcular ROC-AUC si es binario o multilabel
+    try:
+        if len(np.unique(labels)) == 2:
+            # problema binario
+            probs = torch.softmax(torch.tensor(logits), dim=-1).numpy()[:,1]
+            roc_auc = roc_auc_score(labels, probs)
+        else:
+            # multiclase: usar one-vs-rest
+            probs = torch.softmax(torch.tensor(logits), dim=-1).numpy()
+            labels_onehot = np.eye(probs.shape[1])[labels]
+            roc_auc = roc_auc_score(labels_onehot, probs, average="weighted", multi_class="ovr")
+    except Exception as e:
+        print("No se pudo calcular ROC-AUC:", e)
+        roc_auc = None
+    
+    return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1, "roc_auc": roc_auc}
 
-def tokenize(batch): # TOKENIZA DESDE SU VOCABULARIO
-    """
-    Tokenize a batch of tweets with the project RoBERTa tokenizer.
+# ----------------------------
+# Preparación de datasets para varias etiquetas
+# ----------------------------
+def prepare_multilabel_datasets(
+    X_train, y_train, X_val, y_val, X_test, y_test,
+    label_list,
+    model_id="cardiffnlp/twitter-xlm-roberta-base",
+    max_length=128
+):
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    results = {}
 
-    Args:
-        batch (dict): Batch containing a ``"tweet"`` field.
+    for label in label_list:
+        y_train_label = y_train[label].astype('category')
+        y_val_label   = y_val[label].astype('category')
+        y_test_label  = y_test[label].astype('category')
 
-    Returns:
-        dict: Tokenized inputs ready for the Trainer API.
-    """
-    return tokenizer(batch["tweet"], truncation=True, padding="max_length", max_length=128)
+        y_train_codes = y_train_label.cat.codes.reset_index(drop=True)
+        y_val_codes   = y_val_label.cat.codes.reset_index(drop=True)
+        y_test_codes  = y_test_label.cat.codes.reset_index(drop=True)
 
-dataset = dataset.map(tokenize, batched=True)
+        label_map = dict(enumerate(y_train_label.cat.categories))
 
-dataset.set_format(type="torch", columns=['input_ids', 'attention_mask', 'labels'])
+        def create_dataset(X, y):
+            df = pd.DataFrame({"text": X}).reset_index(drop=True)
+            df["label"] = y
+            dataset = Dataset.from_pandas(df)
+            def tokenize(batch):
+                enc = tokenizer(batch["text"], truncation=True, padding="max_length", max_length=max_length)
+                enc["labels"] = batch["label"]
+                return enc
+            dataset = dataset.map(tokenize, batched=True)
+            dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+            return dataset
 
-train_test = dataset.train_test_split(test_size=0.2)
+        results[label] = {
+            "train": create_dataset(X_train, y_train_codes),
+            "val": create_dataset(X_val, y_val_codes),
+            "test": create_dataset(X_test, y_test_codes),
+            "num_labels": len(y_train_label.cat.categories),
+            "label_map": label_map
+        }
 
-model = AutoModelForSequenceClassification.from_pretrained(
-    model_id,
-    num_labels=df["labels"].nunique()
-)
+    return tokenizer, results
 
-training_args = TrainingArguments(
-    output_dir="./llama_gender",
-    per_device_train_batch_size=2,
-    per_device_eval_batch_size=2,
-    learning_rate=2e-5,
-    num_train_epochs=2,
-    evaluation_strategy="epoch",
-    logging_steps=20,
-    fp16=True
-)
+# ----------------------------
+# Entrenamiento para una etiqueta
+# ----------------------------
+def train_model_for_label(train_dataset, val_dataset, num_labels,
+                          model_id="cardiffnlp/twitter-xlm-roberta-base",
+                          output_dir="./model_label",
+                          epochs=3, batch_size=2, lr=2e-5):
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_id,
+        num_labels=num_labels,
+        problem_type="single_label_classification"
+    )
 
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_test["train"],
-    eval_dataset=train_test["test"]
-)
+    training_args = TrainingArguments(
+        output_dir=output_dir,
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        learning_rate=lr,
+        num_train_epochs=epochs,
+        logging_steps=20,
+        save_strategy="no",
+        fp16=torch.cuda.is_available(),
+        report_to=[]
+    )
 
-outputs = trainer.train()
-print(outputs)
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=val_dataset,
+        compute_metrics=compute_metrics
+    )
+
+    best_f1 = 0
+    best_checkpoint = None
+
+    for epoch in range(epochs):
+        print(f"\n--- Epoch {epoch+1}/{epochs} ---")
+        trainer.train()
+        metrics = trainer.evaluate(val_dataset)
+        print(f"Validation metrics: {metrics}")
+
+        # Guardar manualmente el mejor modelo según F1
+        if metrics["eval_f1"] > best_f1:
+            best_f1 = metrics["eval_f1"]
+            best_checkpoint = os.path.join(output_dir, f"best_model_epoch_{epoch+1}")
+            trainer.save_model(best_checkpoint)
+            print(f"Best model updated at epoch {epoch+1} with F1={best_f1:.4f}")
+
+    print(f"\nTraining finished. Best F1: {best_f1:.4f}")
+    return trainer, {"best_f1": best_f1, "best_checkpoint": best_checkpoint}
+
+
+# ----------------------------
+# Bloque principal
+# ----------------------------
+if __name__ == "__main__":
+    import TextVectorRepresentation as TV
+
+    path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
+    data = TV.load_data(path)
+    data  = data.sample(n=30000, random_state=42).reset_index()
+    
+    train_data, val_data, test_data = TV.divide_train_val_test(data)
+    X_train, y_train = TV.separate_x_y_vectors(train_data)
+    X_val, y_val = TV.separate_x_y_vectors(val_data)
+    X_test, y_test = TV.separate_x_y_vectors(test_data)
+
+    labels = ["gender", "profession", "ideology_binary", "ideology_multiclass"]
+
+    tokenizer, datasets = prepare_multilabel_datasets(
+        X_train, y_train, X_val, y_val, X_test, y_test, labels
+    )
+
+    # Crear carpeta de modelos si no existe
+    os.makedirs("./models", exist_ok=True)
+
+    trainers = {}
+    all_results = {}  # Aquí guardaremos todas las métricas
+
+    for label in labels:
+        print(f"\nEntrenando modelo para {label}...")
+        trainer, outputs = train_model_for_label(
+            datasets[label]["train"],
+            datasets[label]["val"],
+            datasets[label]["num_labels"],
+            output_dir=f"./models/{label}"
+        )
+        trainers[label] = trainer
+        print(f"{label} - Best F1:", outputs["best_f1"])
+        print(f"{label} - Checkpoint guardado en:", outputs["best_checkpoint"])
+
+        # Evaluación en test
+        test_results = trainer.evaluate(datasets[label]["test"])
+        print(f"{label} - Test metrics:", test_results)
+
+        # Guardar métricas en el diccionario
+        all_results[label] = {
+            "best_f1": outputs["best_f1"],
+            "best_checkpoint": outputs["best_checkpoint"],
+            "test_metrics": test_results
+        }
+
+    # Guardar todas las métricas en un JSON
+    results_path = "./models/results.json"
+    with open(results_path, "w") as f:
+        json.dump(all_results, f, indent=4)
+
+    print(f"\nTodas las métricas guardadas en {results_path}")
