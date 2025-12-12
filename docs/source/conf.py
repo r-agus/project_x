@@ -67,6 +67,8 @@ nitpick_ignore = [
     ("py:class", "pandas.DataFrame"),
     ("py:class", "torch.nn.Module"),
     ("py:class", "torch.Tensor"),
+    ("py:class", "torch.device"),
+    ("py:class", "DataLoader"),
     ("py:class", "optional"),
     ("py:class", "model"),
     ("py:class", "nn.Module"),

@@ -1,0 +1,227 @@
+(43760,)
+Map: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:00<00:00, 4444.40 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8823.24 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 9090.12 examples/s]
+Map: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:00<00:00, 9929.28 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8332.83 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8570.94 examples/s]
+Map: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:00<00:00, 10291.99 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8824.11 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8333.33 examples/s]
+Map: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:00<00:00, 10071.77 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 5084.89 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 6122.39 examples/s]
+
+Entrenando modelo para gender...
+Some weights of XLMRobertaForSequenceClassification were not initialized from the model checkpoint at cardiffnlp/twitter-xlm-roberta-base and are newly initialized: ['classifier.dense.bias', 'classifier.dense.weight', 'classifier.out_proj.bias', 'classifier.out_proj.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+--- Epoch 1/3 ---
+{'loss': 0.6329, 'grad_norm': 3.5104832649230957, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.6519, 'grad_norm': 0.9583145976066589, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.5973, 'grad_norm': 1.4790279865264893, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.656, 'grad_norm': 0.8281122446060181, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.6202, 'grad_norm': 1.4974592924118042, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 0.5783, 'grad_norm': 2.1773059368133545, 'learning_rate': 1.96969696969697e-06, 'epoch': 2.73}
+{'train_runtime': 71.4152, 'train_samples_per_second': 58.811, 'train_steps_per_second': 1.848, 'train_loss': 0.6205797231558597, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [01:11<00:00,  1.85it/s] 
+ 80%|████████████████████████████████████████████████████████████████████████████████████████▊                      | 8/10 [00:00<00:00, 27.20it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 21.37it/s]
+Validation metrics: {'eval_loss': 0.6072998046875, 'eval_accuracy': 0.6933333333333334, 'eval_precision': 0.48071111111111114, 'eval_recall': 0.6933333333333334, 'eval_f1': 0.5677690288713911, 'eval_roc_auc': 0.600491220735786, 'eval_runtime': 0.582, 'eval_samples_per_second': 515.461, 'eval_steps_per_second': 17.182, 'epoch': 3.0}
+Best model updated at epoch 1 with F1=0.5678
+
+--- Epoch 2/3 ---
+{'loss': 0.5897, 'grad_norm': 8.598745346069336, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.6297, 'grad_norm': 5.201603889465332, 'learning_rate': 1.4242424242424245e-05, 'epoch': 0.91}
+{'loss': 0.5276, 'grad_norm': 4.340970516204834, 'learning_rate': 1.1212121212121212e-05, 'epoch': 1.36}
+{'loss': 0.5675, 'grad_norm': 4.645705699920654, 'learning_rate': 8.181818181818183e-06, 'epoch': 1.82}
+{'loss': 0.4792, 'grad_norm': 4.901554584503174, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 0.4482, 'grad_norm': 4.548449516296387, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 30.57, 'train_samples_per_second': 137.389, 'train_steps_per_second': 4.318, 'train_loss': 0.531240878683148, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [00:30<00:00,  4.32it/s] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 32.47it/s]
+Validation metrics: {'eval_loss': 0.6801409721374512, 'eval_accuracy': 0.6466666666666666, 'eval_precision': 0.5955952380952381, 'eval_recall': 0.6466666666666666, 'eval_f1': 0.6080414078674948, 'eval_roc_auc': 0.5662886705685619, 'eval_runtime': 0.344, 'eval_samples_per_second': 872.089, 'eval_steps_per_second': 29.07, 'epoch': 3.0}
+Best model updated at epoch 2 with F1=0.6080
+
+--- Epoch 3/3 ---
+{'loss': 0.395, 'grad_norm': 7.736661911010742, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.4102, 'grad_norm': 8.19368839263916, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.2596, 'grad_norm': 4.240858554840088, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.3029, 'grad_norm': 7.921014308929443, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.234, 'grad_norm': 8.174633026123047, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 0.1821, 'grad_norm': 6.431491374969482, 'learning_rate': 1.96969696969697e-06, 'epoch': 2.73}
+{'train_runtime': 30.585, 'train_samples_per_second': 137.322, 'train_steps_per_second': 4.316, 'train_loss': 0.2823655063455755, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [00:30<00:00,  4.32it/s] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 32.47it/s]
+Validation metrics: {'eval_loss': 1.091028094291687, 'eval_accuracy': 0.62, 'eval_precision': 0.5881481481481481, 'eval_recall': 0.62, 'eval_f1': 0.5999106478034253, 'eval_roc_auc': 0.5322690217391305, 'eval_runtime': 0.345, 'eval_samples_per_second': 869.563, 'eval_steps_per_second': 28.985, 'epoch': 3.0}
+
+Training finished. Best F1: 0.6080
+gender - Best F1: 0.6080414078674948
+gender - Checkpoint guardado en: ./models/gender\best_model_epoch_2
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 31.85it/s]
+gender - Test metrics: {'eval_loss': 0.9225913286209106, 'eval_accuracy': 0.6566666666666666, 'eval_precision': 0.6445052439580483, 'eval_recall': 0.6566666666666666, 'eval_f1': 0.6489525670248562, 'eval_roc_auc': 0.6461, 'eval_runtime': 0.353, 'eval_samples_per_second': 849.861, 'eval_steps_per_second': 28.329, 'epoch': 3.0}
+
+Entrenando modelo para profession...
+Some weights of XLMRobertaForSequenceClassification were not initialized from the model checkpoint at cardiffnlp/twitter-xlm-roberta-base and are newly initialized: ['classifier.dense.bias', 'classifier.dense.weight', 'classifier.out_proj.bias', 'classifier.out_proj.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+--- Epoch 1/3 ---
+{'loss': 0.8646, 'grad_norm': 1.8647490739822388, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.7641, 'grad_norm': 7.003407001495361, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.7196, 'grad_norm': 4.384807586669922, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.6874, 'grad_norm': 4.111556529998779, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.6096, 'grad_norm': 3.450242519378662, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 0.6271, 'grad_norm': 11.841760635375977, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 463.2522, 'train_samples_per_second': 9.066, 'train_steps_per_second': 0.285, 'train_loss': 0.7051372780944362, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [07:43<00:00,  3.51s/it] 
+ 90%|███████████████████████████████████████████████████████████████████████████████████████████████████▉           | 9/10 [00:01<00:00,  7.31it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:01<00:00,  8.41it/s]
+Validation metrics: {'eval_loss': 0.7241880297660828, 'eval_accuracy': 0.69, 'eval_precision': 0.6484938751281637, 'eval_recall': 0.69, 'eval_f1': 0.6643496796024673, 'eval_roc_auc': 0.7597638050525376, 'eval_runtime': 1.337, 'eval_samples_per_second': 224.388, 'eval_steps_per_second': 7.48, 'epoch': 3.0}
+Best model updated at epoch 1 with F1=0.6643
+
+--- Epoch 2/3 ---
+{'loss': 0.5893, 'grad_norm': 5.794342041015625, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.5862, 'grad_norm': 10.467658042907715, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.535, 'grad_norm': 3.8367817401885986, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.4995, 'grad_norm': 7.829535961151123, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.4236, 'grad_norm': 12.852030754089355, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 0.4134, 'grad_norm': 10.561269760131836, 'learning_rate': 1.96969696969697e-06, 'epoch': 2.73}
+{'train_runtime': 334.3786, 'train_samples_per_second': 12.561, 'train_steps_per_second': 0.395, 'train_loss': 0.49648665659355395, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [05:34<00:00,  2.53s/it] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:03<00:00,  3.60it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:03<00:00,  3.32it/s] 
+Validation metrics: {'eval_loss': 0.8482834100723267, 'eval_accuracy': 0.6766666666666666, 'eval_precision': 0.6424523674778344, 'eval_recall': 0.6766666666666666, 'eval_f1': 0.6589903243595528, 'eval_roc_auc': 0.7651770623742455, 'eval_runtime': 3.38, 'eval_samples_per_second': 88.757, 'eval_steps_per_second': 2.959, 'epoch': 3.0}
+
+--- Epoch 3/3 ---
+{'loss': 0.3837, 'grad_norm': 13.108832359313965, 'learning_rate': 1.7272727272727274e-05, 'epoch': 0.45}
+{'loss': 0.4243, 'grad_norm': 11.060121536254883, 'learning_rate': 1.4242424242424245e-05, 'epoch': 0.91}
+{'loss': 0.3039, 'grad_norm': 7.5744709968566895, 'learning_rate': 1.1212121212121212e-05, 'epoch': 1.36}
+{'loss': 0.3503, 'grad_norm': 22.18706703186035, 'learning_rate': 8.181818181818183e-06, 'epoch': 1.82}
+{'loss': 0.2324, 'grad_norm': 6.1847991943359375, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 0.2266, 'grad_norm': 29.422998428344727, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 341.0065, 'train_samples_per_second': 12.316, 'train_steps_per_second': 0.387, 'train_loss': 0.30610858942523145, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [05:41<00:00,  2.58s/it] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:05<00:00,  1.98it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:05<00:00,  1.79it/s] 
+Validation metrics: {'eval_loss': 1.1007200479507446, 'eval_accuracy': 0.6466666666666666, 'eval_precision': 0.6208797653958944, 'eval_recall': 0.6466666666666666, 'eval_f1': 0.6321624285432683, 'eval_roc_auc': 0.7571524304557503, 'eval_runtime': 6.292, 'eval_samples_per_second': 47.68, 'eval_steps_per_second': 1.589, 'epoch': 3.0}
+
+Training finished. Best F1: 0.6643
+profession - Best F1: 0.6643496796024673
+profession - Checkpoint guardado en: ./models/profession\best_model_epoch_1
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:05<00:00,  1.98it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:05<00:00,  1.79it/s] 
+profession - Test metrics: {'eval_loss': 1.0113719701766968, 'eval_accuracy': 0.6933333333333334, 'eval_precision': 0.6489709979736576, 'eval_recall': 0.6933333333333334, 'eval_f1': 0.6694182523594673, 'eval_roc_auc': 0.7667183007217414, 'eval_runtime': 6.291, 'eval_samples_per_second': 47.687, 
+'eval_steps_per_second': 1.59, 'epoch': 3.0}
+
+Entrenando modelo para ideology_binary...
+Some weights of XLMRobertaForSequenceClassification were not initialized from the model checkpoint at cardiffnlp/twitter-xlm-roberta-base and are newly initialized: ['classifier.dense.bias', 'classifier.dense.weight', 'classifier.out_proj.bias', 'classifier.out_proj.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+--- Epoch 1/3 ---
+{'loss': 0.695, 'grad_norm': 1.8113913536071777, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.6867, 'grad_norm': 1.2025532722473145, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.6886, 'grad_norm': 1.0081473588943481, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.6764, 'grad_norm': 0.9231347441673279, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.6554, 'grad_norm': 6.0920233726501465, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 0.6449, 'grad_norm': 3.54831862449646, 'learning_rate': 1.96969696969697e-06, 'epoch': 2.73}
+{'train_runtime': 706.7831, 'train_samples_per_second': 5.942, 'train_steps_per_second': 0.187, 'train_loss': 0.6712718804677328, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [11:46<00:00,  5.35s/it] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:04<00:00,  2.43it/s]
+Validation metrics: {'eval_loss': 0.6672229170799255, 'eval_accuracy': 0.6066666666666667, 'eval_precision': 0.6066666666666667, 'eval_recall': 0.6066666666666667, 'eval_f1': 0.6066666666666667, 'eval_roc_auc': 0.6422344778509161, 'eval_runtime': 4.621, 'eval_samples_per_second': 64.921, 'eval_steps_per_second': 2.164, 'epoch': 3.0}
+Best model updated at epoch 1 with F1=0.6067
+
+--- Epoch 2/3 ---
+{'loss': 0.6545, 'grad_norm': 6.7895708084106445, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.5882, 'grad_norm': 4.0681471824646, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.5541, 'grad_norm': 4.546311378479004, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.502, 'grad_norm': 5.436307430267334, 'learning_rate': 8.181818181818183e-06, 'epoch': 1.82}
+{'loss': 0.4572, 'grad_norm': 10.74377155303955, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 0.4323, 'grad_norm': 6.609368801116943, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 735.9306, 'train_samples_per_second': 5.707, 'train_steps_per_second': 0.179, 'train_loss': 0.5175945108587091, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [12:15<00:00,  5.58s/it] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:03<00:00,  2.55it/s]
+Validation metrics: {'eval_loss': 0.810934841632843, 'eval_accuracy': 0.6066666666666667, 'eval_precision': 0.6074462365591399, 'eval_recall': 0.6066666666666667, 'eval_f1': 0.6037530864197531, 'eval_roc_auc': 0.632649884362213, 'eval_runtime': 4.421, 'eval_samples_per_second': 67.858, 'eval_steps_per_second': 2.262, 'epoch': 3.0}
+
+--- Epoch 3/3 ---
+{'loss': 0.394, 'grad_norm': 11.414582252502441, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 0.3577, 'grad_norm': 14.755196571350098, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 0.2595, 'grad_norm': 8.366781234741211, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 0.2168, 'grad_norm': 18.141387939453125, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 0.1774, 'grad_norm': 21.440210342407227, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 0.1539, 'grad_norm': 5.833310604095459, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 728.9281, 'train_samples_per_second': 5.762, 'train_steps_per_second': 0.181, 'train_loss': 0.24648722193457864, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [12:08<00:00,  5.52s/it] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:04<00:00,  2.37it/s]
+Validation metrics: {'eval_loss': 1.2451272010803223, 'eval_accuracy': 0.6033333333333334, 'eval_precision': 0.6067200533867201, 'eval_recall': 0.6033333333333334, 'eval_f1': 0.5965610524365388, 'eval_roc_auc': 0.6259562355452766, 'eval_runtime': 4.688, 'eval_samples_per_second': 63.994, 'eval_steps_per_second': 2.133, 'epoch': 3.0}
+
+Training finished. Best F1: 0.6067
+ideology_binary - Best F1: 0.6066666666666667
+ideology_binary - Checkpoint guardado en: ./models/ideology_binary\best_model_epoch_1
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:03<00:00,  2.53it/s]
+ideology_binary - Test metrics: {'eval_loss': 1.178584098815918, 'eval_accuracy': 0.6066666666666667, 'eval_precision': 0.6064719727172295, 'eval_recall': 0.6066666666666667, 'eval_f1': 0.5994742857142857, 'eval_roc_auc': 0.6429367946830813, 'eval_runtime': 4.44, 'eval_samples_per_second': 67.568, 'eval_steps_per_second': 2.252, 'epoch': 3.0}
+(43760,)
+Map: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:00<00:00, 9655.17 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8572.05 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 300/300 [00:00<00:00, 8823.30 examples/s]
+
+Entrenando modelo para ideology_multiclass...
+Some weights of XLMRobertaForSequenceClassification were not initialized from the model checkpoint at cardiffnlp/twitter-xlm-roberta-base and are newly initialized: ['classifier.dense.bias', 'classifier.dense.weight', 'classifier.out_proj.bias', 'classifier.out_proj.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+--- Epoch 1/3 ---
+{'loss': 1.3608, 'grad_norm': 3.9927291870117188, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 1.3084, 'grad_norm': 2.771390676498413, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 1.3098, 'grad_norm': 3.7563931941986084, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 1.2914, 'grad_norm': 3.9205703735351562, 'learning_rate': 8.03030303030303e-06, 'epoch': 1.82}
+{'loss': 1.2724, 'grad_norm': 3.6859774589538574, 'learning_rate': 5e-06, 'epoch': 2.27}
+{'loss': 1.2497, 'grad_norm': 3.7858121395111084, 'learning_rate': 1.96969696969697e-06, 'epoch': 2.73}
+{'train_runtime': 66.704, 'train_samples_per_second': 62.965, 'train_steps_per_second': 1.979, 'train_loss': 1.295005783890233, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [01:06<00:00,  1.98it/s] 
+ 80%|████████████████████████████████████████████████████████████████████████████████████████▊                      | 8/10 [00:00<00:00, 32.43it/s]C:\anaconda\envs\PT\Lib\site-packages\sklearn\metrics\_classification.py:1565: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 
+in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 31.25it/s]
+Validation metrics: {'eval_loss': 1.2293490171432495, 'eval_accuracy': 0.43, 'eval_precision': 0.320024154589372, 'eval_recall': 0.43, 'eval_f1': 0.3662405323759905, 'eval_roc_auc': 0.6219835004296714, 'eval_runtime': 0.419, 'eval_samples_per_second': 715.995, 'eval_steps_per_second': 23.867, 'epoch': 3.0}
+Best model updated at epoch 1 with F1=0.3662
+
+--- Epoch 2/3 ---
+{'loss': 1.2494, 'grad_norm': 5.031735420227051, 'learning_rate': 1.7121212121212123e-05, 'epoch': 0.45}
+{'loss': 1.1804, 'grad_norm': 4.357321739196777, 'learning_rate': 1.4090909090909092e-05, 'epoch': 0.91}
+{'loss': 1.163, 'grad_norm': 7.30849552154541, 'learning_rate': 1.1060606060606061e-05, 'epoch': 1.36}
+{'loss': 1.1071, 'grad_norm': 8.135261535644531, 'learning_rate': 8.181818181818183e-06, 'epoch': 1.82}
+{'loss': 1.0511, 'grad_norm': 7.475531578063965, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 1.0088, 'grad_norm': 6.031833171844482, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 30.668, 'train_samples_per_second': 136.95, 'train_steps_per_second': 4.304, 'train_loss': 1.1159149444464482, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [00:30<00:00,  4.30it/s] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 32.36it/s]
+Validation metrics: {'eval_loss': 1.2577710151672363, 'eval_accuracy': 0.43666666666666665, 'eval_precision': 0.3505535423839145, 'eval_recall': 0.43666666666666665, 'eval_f1': 0.3827912227480484, 'eval_roc_auc': 0.6209065921363369, 'eval_runtime': 0.344, 'eval_samples_per_second': 872.162, 'eval_steps_per_second': 29.072, 'epoch': 3.0}
+Best model updated at epoch 2 with F1=0.3828
+
+--- Epoch 3/3 ---
+{'loss': 1.0042, 'grad_norm': 9.3753080368042, 'learning_rate': 1.7272727272727274e-05, 'epoch': 0.45}
+{'loss': 0.9407, 'grad_norm': 13.820775032043457, 'learning_rate': 1.4242424242424245e-05, 'epoch': 0.91}
+{'loss': 0.8539, 'grad_norm': 16.445268630981445, 'learning_rate': 1.1212121212121212e-05, 'epoch': 1.36}
+{'loss': 0.7802, 'grad_norm': 15.954061508178711, 'learning_rate': 8.181818181818183e-06, 'epoch': 1.82}
+{'loss': 0.6767, 'grad_norm': 16.911653518676758, 'learning_rate': 5.151515151515152e-06, 'epoch': 2.27}
+{'loss': 0.6599, 'grad_norm': 11.241134643554688, 'learning_rate': 2.1212121212121216e-06, 'epoch': 2.73}
+{'train_runtime': 30.949, 'train_samples_per_second': 135.707, 'train_steps_per_second': 4.265, 'train_loss': 0.8039142615867384, 'epoch': 3.0}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [00:30<00:00,  4.27it/s] 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 31.95it/s]
+Validation metrics: {'eval_loss': 1.5171051025390625, 'eval_accuracy': 0.4, 'eval_precision': 0.42166270850879867, 'eval_recall': 0.4, 'eval_f1': 0.40063020496799245, 'eval_roc_auc': 0.615964675295049, 'eval_runtime': 0.352, 'eval_samples_per_second': 852.273, 'eval_steps_per_second': 28.409, 'epoch': 3.0}
+Best model updated at epoch 3 with F1=0.4006
+
+Training finished. Best F1: 0.4006
+ideology_multiclass - Best F1: 0.40063020496799245
+ideology_multiclass - Checkpoint guardado en: ./models/ideology_multiclass\best_model_epoch_3
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 31.85it/s]
+ideology_multiclass - Test metrics: {'eval_loss': 1.452080249786377, 'eval_accuracy': 0.47333333333333333, 'eval_precision': 0.4844907407407408, 'eval_recall': 0.47333333333333333, 'eval_f1': 0.4684942634152343, 'eval_roc_auc': 0.6588337850425539, 'eval_runtime': 0.35, 'eval_samples_per_second': 857.143, 'eval_steps_per_second': 28.571, 'epoch': 3.0}

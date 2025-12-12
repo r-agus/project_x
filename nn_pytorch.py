@@ -10,7 +10,16 @@ A BERT embedding layer is used to convert the tweet text into numerical format b
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score,
+    classification_report
+)
+from torch.optim.lr_scheduler import CosineAnnealingLR
+import numpy as np
 from TextVectorRepresentation import (
     vectorRepresentation_BERT,
     vectorRepresentation_TFIDF,
@@ -18,8 +27,11 @@ from TextVectorRepresentation import (
     separate_x_y_vectors,
     divide_train_val_test
 )
-from exploratory_analysis import load_data
-
+from init import load_data
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import os
 
 # ============================
 #   MODEL
@@ -29,39 +41,43 @@ class NeuralNetwork(nn.Module):
     """
     A feedforward neural network for multi-class classification.
     """
-    def __init__(self):
+    def __init__(self, input_dim=768):
         """
         Initializes the neural network layers.
         The network consists of:
         - An input layer that flattens the input tensor.
         - A sequence of linear layers with ReLU activations.
         - An output layer with 4 outputs corresponding to the 4 classification tasks.
+        
+        Args:
+            input_dim (int): The dimension of input features (768 for BERT, 100/200 for Word2Vec).
         """
         super().__init__()
 
         self.shared = nn.Sequential(
-            nn.Linear(768, 1024),
-            nn.BatchNorm1d(1024),
-            nn.GELU(),
-            nn.Dropout(0.2),
-
-            nn.Linear(1024, 512),
+            nn.Linear(input_dim, 512),
             nn.BatchNorm1d(512),
             nn.GELU(),
-            nn.Dropout(0.2),
+            nn.Dropout(0.3),
 
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
+            nn.GELU(),
+            nn.Dropout(0.2),
+
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
             nn.GELU(),
             nn.Dropout(0.1)
         )
 
 
 
-        self.gender_head = nn.Linear(256, 2)
-        self.prof_head = nn.Linear(256, 3)
-        self.bin_head = nn.Linear(256, 2)
-        self.multi_head = nn.Linear(256, 4)
+
+        self.gender_head = nn.Linear(128, 2)
+        self.prof_head = nn.Linear(128, 3)
+        self.bin_head = nn.Linear(128, 2)
+        self.multi_head = nn.Linear(128, 4)
 
     def forward(self, x):
         """
@@ -98,6 +114,9 @@ def map_politicES_labels(y_raw):
     Returns:
         torch.Tensor: Mapped labels in numerical format.
     """
+    if hasattr(y_raw, 'values'):
+        y_raw = y_raw.values
+
     y_mapped = []
     for row in y_raw:
         gender = 0 if row[0] == "male" else 1
@@ -119,93 +138,175 @@ def map_politicES_labels(y_raw):
 
 
 # ============================
-#   EVALUATION ON TEST
+#   HELPER FUNCTIONS
 # ============================
 
+def compute_class_weights(y_train_column):
+    """
+    Computes weights inversely proportional to class frequency.
+    
+    Args:
+        y_train_column (torch.Tensor): A tensor containing class labels for one task.
+    
+    Returns:
+        torch.Tensor: Weights for each class.
+    """
+    classes, counts = torch.unique(y_train_column, return_counts=True)
+    total = counts.sum().item()
+    weights = [total / c.item() for c in counts]
+    weights = torch.tensor(weights, dtype=torch.float32)
+    return weights
+
+
+def plot_confusion_matrix(y_true, y_pred, task_name, class_names=None):
+    """
+    Plots a confusion matrix for a classification task.
+    
+    Args:
+        y_true (array-like): True labels.
+        y_pred (array-like): Predicted labels.
+        task_name (str): Name of the task for the plot title.
+        class_names (list, optional): Names of the classes for axis labels.
+    """
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(6,5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=class_names,
+                yticklabels=class_names)
+    plt.title(f"Confusion Matrix - {task_name}")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.tight_layout()
+    plt.show()
+
+
 def evaluate(model, dataloader, device):
+    """
+    Evaluates the model on a given dataloader and prints metrics.
+    
+    Args:
+        model (nn.Module): The trained neural network model.
+        dataloader (DataLoader): DataLoader for the evaluation dataset.
+        device (torch.device): Device to run evaluation on.
+    """
     model.eval()
-    correct_gender = 0
-    correct_prof = 0
-    correct_bin = 0
-    correct_multi = 0
-    total = 0
+
+    all_true = { "gender": [], "profession": [], "ideology_bin": [], "ideology_multi": [] }
+    all_pred = { "gender": [], "profession": [], "ideology_bin": [], "ideology_multi": [] }
+    all_proba = { "gender": [], "profession": [], "ideology_bin": [], "ideology_multi": [] }
 
     with torch.no_grad():
         for Xb, yb in dataloader:
-            Xb, yb = Xb.to(device), yb.to(device)
+            Xb = Xb.to(device)
+            yb = yb.to(device)
+
             outputs = model(Xb)
 
-            pred_gender = torch.argmax(outputs["gender"], dim=1)
-            pred_prof = torch.argmax(outputs["profession"], dim=1)
-            pred_bin = torch.argmax(outputs["ideology_bin"], dim=1)
-            pred_multi = torch.argmax(outputs["ideology_multi"], dim=1)
+            for key in outputs:
+                logits = outputs[key]
+                probs = torch.softmax(logits, dim=1)
+                preds = torch.argmax(probs, dim=1)
 
-            correct_gender += (pred_gender == yb[:, 0]).sum().item()
-            correct_prof += (pred_prof == yb[:, 1]).sum().item()
-            correct_bin += (pred_bin == yb[:, 2]).sum().item()
-            correct_multi += (pred_multi == yb[:, 3]).sum().item()
+                all_true[key].extend(yb[:, list(outputs.keys()).index(key)].cpu().numpy())
+                all_pred[key].extend(preds.cpu().numpy())
+                all_proba[key].extend(probs.cpu().numpy())
 
-            total += yb.size(0)
+    print("\n========== FULL METRICS ==========\n")
 
-    print("\n===== TEST EVALUATION =====")
-    print(f"Accuracy Gender:        {correct_gender/total:.4f}")
-    print(f"Accuracy Profession:    {correct_prof/total:.4f}")
-    print(f"Accuracy Ideology bin:  {correct_bin/total:.4f}")
-    print(f"Accuracy Ideology mult: {correct_multi/total:.4f}")
+    for task in all_true.keys():
+        y_true = np.array(all_true[task])
+        y_pred = np.array(all_pred[task])
+        y_proba = np.array(all_proba[task])
 
+        print(f"\n===== {task.upper()} =====")
+
+        acc = accuracy_score(y_true, y_pred)
+        print(f"Accuracy: {acc:.4f}")
+
+        precision = precision_score(y_true, y_pred, average="macro", zero_division=0)
+        recall    = recall_score(y_true, y_pred, average="macro", zero_division=0)
+        f1        = f1_score(y_true, y_pred, average="macro", zero_division=0)
+
+        print(f"Precision (macro): {precision:.4f}")
+        print(f"Recall (macro):    {recall:.4f}")
+        print(f"F1-score (macro):  {f1:.4f}")
+
+        num_classes = y_proba.shape[1]
+
+        if num_classes == 2:
+            auc = roc_auc_score(y_true, y_proba[:,1])
+        else:
+            try:
+                auc = roc_auc_score(y_true, y_proba, multi_class="ovr")
+            except:
+                auc = float("nan")
+
+        print(f"ROC-AUC:           {auc:.4f}")
+
+        print("\n" + classification_report(y_true, y_pred, zero_division=0))
+
+        if task == "gender":
+            classes = ["Male", "Female"]
+        elif task == "profession":
+            classes = ["Politician", "Journalist", "Celebrity"]
+        elif task == "ideology_bin":
+            classes = ["Left", "Right"]
+        elif task == "ideology_multi":
+            classes = ["Left", "Moderate Left", "Moderate Right", "Right"]
+
+        plot_confusion_matrix(y_true, y_pred, task, class_names=classes)
+
+
+# ============================
+#   MAIN EXECUTION
+# ============================
 
 if __name__ == "__main__":
-    # ============================
-    #   DEVICE + MODEL
-    # ============================
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = NeuralNetwork().to(device)
-
     print(f"Using {device} device")
-    print(model)
-
 
     # ============================
     #   LOAD DATA
     # ============================
 
-    path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
-    data = load_data(path)
-    n = 3000
-    data = data.sample(n=n, random_state=42)
+    if not os.path.exists('ProcessedData') or 'y_train_30000.npy' not in os.listdir('ProcessedData'):
+        path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
+        data = load_data(path)
+        n = 3000
+        data = data.sample(n=n, random_state=42)
 
-    train_data, val_data, test_data = divide_train_val_test(data)
+        train_data, val_data, test_data = divide_train_val_test(data)
 
-    X_train, y_train = separate_x_y_vectors(train_data)
-    X_val, y_val = separate_x_y_vectors(val_data)
-    X_test, y_test = separate_x_y_vectors(test_data)
+        X_train, y_train = separate_x_y_vectors(train_data)
+        X_val, y_val = separate_x_y_vectors(val_data)
+        X_test, y_test = separate_x_y_vectors(test_data)
 
+        X_train, X_val, X_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+    else:
+        X_train = np.load("ProcessedData/x_word2vec_train_30000.npy")
+        X_val = np.load("ProcessedData/x_word2vec_val_30000.npy")
+        X_test = np.load("ProcessedData/x_word2vec_test_30000.npy")
+
+        y_train = np.load('ProcessedData/y_train_30000.npy', allow_pickle=True)
+        y_val = np.load('ProcessedData/y_val_30000.npy', allow_pickle=True)
+        y_test = np.load('ProcessedData/y_test_30000.npy', allow_pickle=True)
+
+    y_train_mapped = map_politicES_labels(y_train)
+    y_val_mapped = map_politicES_labels(y_val)
+    y_test_mapped = map_politicES_labels(y_test)
+
+    x_train_dense = np.array(X_train) if not hasattr(X_train, 'toarray') else X_train.toarray()
+    x_val_dense   = np.array(X_val) if not hasattr(X_val, 'toarray') else X_val.toarray()
+    x_test_dense  = np.array(X_test) if not hasattr(X_test, 'toarray') else X_test.toarray()
 
     # ============================
-    #   BERT VECTORIZATION
+    #   MODEL (input_dim based on data)
     # ============================
 
-    x_train, x_val, x_test = vectorRepresentation_BERT(X_train, X_val, X_test)
-
-    y_train_mapped = map_politicES_labels(y_train.values)
-    y_val_mapped = map_politicES_labels(y_val.values)
-    y_test_mapped = map_politicES_labels(y_test.values)
-
-
-    # ============================
-    #   DATA LOADERS
-    # ============================
-
-    # x_train_dense = x_train.toarray()
-    # x_val_dense   = x_val.toarray()
-    # x_test_dense  = x_test.toarray()
-
-    # For BERT embeddings, the output is already dense
-    x_train_dense = x_train
-    x_val_dense   = x_val
-    x_test_dense  = x_test
-
+    input_dim = x_train_dense.shape[1]
+    print(f"Input dimension: {input_dim}")
+    model = NeuralNetwork(input_dim=input_dim).to(device)
+    print(model)
 
     train_loader = DataLoader(
         TensorDataset(torch.tensor(x_train_dense, dtype=torch.float32), y_train_mapped),
@@ -222,13 +323,25 @@ if __name__ == "__main__":
         batch_size=32, shuffle=False
     )
 
-
     # ============================
     #   TRAINING CONFIG
     # ============================
 
+    weights_gender = compute_class_weights(y_train_mapped[:,0]).to(device)
+    criterion_gender = nn.CrossEntropyLoss(weight=weights_gender)
+
+    weights_prof = compute_class_weights(y_train_mapped[:,1]).to(device)
+    criterion_prof = nn.CrossEntropyLoss(weight=weights_prof)
+
+    weights_bin = compute_class_weights(y_train_mapped[:,2]).to(device)
+    criterion_bin = nn.CrossEntropyLoss(weight=weights_bin)
+
+    weights_multi = compute_class_weights(y_train_mapped[:,3]).to(device)
+    criterion_multi = nn.CrossEntropyLoss(weight=weights_multi)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-6, weight_decay=1e-6)
+    scheduler = CosineAnnealingLR(optimizer, T_max=10, eta_min=1e-6)
 
     # ============================
     #   TRAINING LOOP WITH EARLY STOPPING
@@ -238,7 +351,9 @@ if __name__ == "__main__":
     best_val_loss = float('inf')
     epochs_no_improve = 0
     best_model_state = None
-    max_epochs = 50  # número máximo de épocas
+    max_epochs = 50
+    train_losses = []
+    val_losses = []
 
     for epoch in range(max_epochs):
         model.train()
@@ -250,10 +365,10 @@ if __name__ == "__main__":
             outputs = model(Xb)
 
             loss = (
-                criterion(outputs["gender"], yb[:, 0]) +
-                criterion(outputs["profession"], yb[:, 1]) +
-                criterion(outputs["ideology_bin"], yb[:, 2]) +
-                criterion(outputs["ideology_multi"], yb[:, 3])
+                criterion(outputs["gender"], yb[:,0]) +
+                criterion(outputs["profession"], yb[:,1]) +
+                criterion(outputs["ideology_bin"], yb[:,2]) +
+                criterion(outputs["ideology_multi"], yb[:,3])
             )
 
             optimizer.zero_grad()
@@ -261,7 +376,9 @@ if __name__ == "__main__":
             optimizer.step()
             total_loss += loss.item()
 
-        # Validación
+        scheduler.step()
+
+        # Validation
         model.eval()
         val_loss = 0
         with torch.no_grad():
@@ -289,9 +406,30 @@ if __name__ == "__main__":
         if epochs_no_improve >= patience:
             print(f"Early stopping at epoch {epoch+1}")
             break
+        train_losses.append(total_loss / len(train_loader))
+        val_losses.append(val_loss / len(val_loader))
 
-    # Cargar el mejor modelo
+    # Load best model
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
+
+    # ============================
+    #   TRAIN VS VALIDATION LOSS
+    # ============================
+
+    plt.figure(figsize=(8,5))
+    plt.plot(train_losses, label="Train Loss", marker='o')
+    plt.plot(val_losses, label="Val Loss", marker='o')
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Train vs Validation Loss")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+    # ============================
+    #   EVALUATION ON TEST
+    # ============================
 
     evaluate(model, test_loader, device)

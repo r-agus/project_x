@@ -201,7 +201,7 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
     try:
         model = Word2Vec(
             sentences=train_tokens,
-            vector_size=100,
+            vector_size=200,
             window=5,
             min_count=2,
             workers=4,
@@ -244,32 +244,37 @@ if __name__ == "__main__":
     X_val, y_val = separate_x_y_vectors(val_data)
     X_test, y_test = separate_x_y_vectors(test_data)
     
-    x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
-    x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+    # x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+    # x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
     x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
     
     # Create directory if it doesn't exist
     os.makedirs('ProcessedData', exist_ok=True)
 
     # Save embeddings to files as .npy
-    np.save('ProcessedData/x_tfidf_train_30000.npy', x_tfidf_train.toarray() if hasattr(x_tfidf_train, 'toarray') else x_tfidf_train)
-    np.save('ProcessedData/x_tfidf_val_30000.npy', x_tfidf_val.toarray() if hasattr(x_tfidf_val, 'toarray') else x_tfidf_val)
-    np.save('ProcessedData/x_tfidf_test_30000.npy', x_tfidf_test.toarray() if hasattr(x_tfidf_test, 'toarray') else x_tfidf_test)
-    np.save('ProcessedData/x_BERT_train_30000.npy', x_BERT_train)
-    np.save('ProcessedData/x_BERT_val_30000.npy', x_BERT_val)
-    np.save('ProcessedData/x_BERT_test_30000.npy', x_BERT_test)
+    # np.save('ProcessedData/x_tfidf_train_30000.npy', x_tfidf_train.toarray() if hasattr(x_tfidf_train, 'toarray') else x_tfidf_train)
+    # np.save('ProcessedData/x_tfidf_val_30000.npy', x_tfidf_val.toarray() if hasattr(x_tfidf_val, 'toarray') else x_tfidf_val)
+    # np.save('ProcessedData/x_tfidf_test_30000.npy', x_tfidf_test.toarray() if hasattr(x_tfidf_test, 'toarray') else x_tfidf_test)
+    # np.save('ProcessedData/x_BERT_train_30000.npy', x_BERT_train)
+    # np.save('ProcessedData/x_BERT_val_30000.npy', x_BERT_val)
+    # np.save('ProcessedData/x_BERT_test_30000.npy', x_BERT_test)
     np.save('ProcessedData/x_word2vec_train_30000.npy', x_word2vec_train)
     np.save('ProcessedData/x_word2vec_val_30000.npy', x_word2vec_val)
     np.save('ProcessedData/x_word2vec_test_30000.npy', x_word2vec_test)
+    
+    # Save labels
+    np.save('ProcessedData/y_train_30000.npy', y_train.values if hasattr(y_train, 'values') else y_train)
+    np.save('ProcessedData/y_val_30000.npy', y_val.values if hasattr(y_val, 'values') else y_val)
+    np.save('ProcessedData/y_test_30000.npy', y_test.values if hasattr(y_test, 'values') else y_test)
 
-    print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
-    print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
-    print ("Shape of TF-IDF test matrix: ", x_tfidf_test.shape)
+    # print ("Shape of TF-IDF train matrix:", x_tfidf_train.shape)
+    # print ("Shape of TF-IDF val matrix:  ", x_tfidf_val.shape)
+    # print ("Shape of TF-IDF test matrix: ", x_tfidf_test.shape)
 
-    print ("\nShape of BERT train matrix:", x_BERT_train.shape)
-    print ("Shape of BERT val matrix:  ", x_BERT_val.shape)
-    print ("Shape of BERT test matrix: ", x_BERT_test.shape)
+    # print ("\nShape of BERT train matrix:", x_BERT_train.shape)
+    # print ("Shape of BERT val matrix:  ", x_BERT_val.shape)
+    # print ("Shape of BERT test matrix: ", x_BERT_test.shape)
 
-    print ("\nShape of Word2Vec train matrix:", x_word2vec_train.shape)
-    print ("Shape of Word2Vec val matrix:  ", x_word2vec_val.shape)
-    print ("Shape of Word2Vec test matrix: ", x_word2vec_test.shape)
+    # print ("\nShape of Word2Vec train matrix:", x_word2vec_train.shape)
+    # print ("Shape of Word2Vec val matrix:  ", x_word2vec_val.shape)
+    # print ("Shape of Word2Vec test matrix: ", x_word2vec_test.shape)
