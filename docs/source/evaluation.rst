@@ -9,7 +9,7 @@ In this section we describe the classical machine-learning baselines implemented
 For each pair (model, representation) we train the classifier on the training set and evaluate it on both validation and test sets. The evaluation reports accuracy, macro-averaged F1-score, the full classification report and the confusion matrix, which allows us to analyse not only the overall performance but also potential biases between classes. Finally, we aggregate the results into a comparative table covering all combinations of representation, model type and task (binary vs. multiclass). This provides a systematic and reproducible benchmarking framework that will serve as a reference point for the more complex neural and Transformer-based models introduced later in the project.
 
 Evaluation results for Logistic Regression and SVM
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following table summarizes the test performance (accuracy and macro F1-score) of all model–representation combinations for both the binary and multiclass ideology classification tasks.
 
@@ -50,10 +50,10 @@ The architecture is a simple multilayer perceptron: the input embedding is flatt
 
 Labels are constructed by mapping the raw string annotations from the dataset (gender, profession and ideology fields) to integer codes using a dedicated mapping function. The model is trained on top of these BERT embeddings on the training split and then evaluated on the validation and test splits, using the same metrics as for the scikit-learn baselines (accuracy and macro-averaged F1-score per task). The final results of the PyTorch neural network will be summarised in a separate table, allowing a direct comparison with the Logistic Regression and Linear SVM baselines described above.
 
-Evaluation results for the PyTorch neural network
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The table below reports the test performance (accuracy and macro F1-score) of the PyTorch neural network for the different prediction tasks in the politicES dataset.
+NN (PyTorch) + TF-IDF
+^^^^^^^^^^^^^^^^^^^^^
 
+The following table reports the test performance (accuracy and macro F1-score) of the PyTorch neural network using TF-IDF representations for the different prediction tasks.
 
 +-------------------------+----------------------+----------+----------+
 | Model                   | Task                 | Accuracy | F1-macro |
@@ -67,8 +67,8 @@ The table below reports the test performance (accuracy and macro F1-score) of th
 | NN (PyTorch) + TF-IDF   | Multiclass ideology  | 0.4404   | 0.3634   |
 +-------------------------+----------------------+----------+----------+
 
-Confusion matrices (TF-IDF + neural network)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Confusion matrices
+"""""""""""""""""""
 
 .. figure:: _static/Confusion_matrix_gender_tfidf.png
    :width: 60%
@@ -94,11 +94,119 @@ Confusion matrices (TF-IDF + neural network)
 
    Confusion matrix for multiclass ideology (TF-IDF + neural network).
 
-Training and validation loss (TF-IDF + neural network)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Training and validation loss
+"""""""""""""""""""""""""""""
 
 .. figure:: _static/Train_vs_validation_nn_tfidf.png
    :width: 80%
    :align: center
 
    Training vs validation loss across epochs for the TF-IDF neural network.
+
+
+NN (PyTorch) + Word2Vec
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The following table reports the test performance (accuracy and macro F1-score) of the PyTorch neural network using Word2Vec representations for the different prediction tasks.
+
++---------------------------+----------------------+----------+----------+
+| Model                     | Task                 | Accuracy | F1-macro |
++===========================+======================+==========+==========+
+| NN (PyTorch) + Word2Vec   | Gender               | 0.6216   | 0.5574   |
++---------------------------+----------------------+----------+----------+
+| NN (PyTorch) + Word2Vec   | Profession           | 0.6405   | 0.4129   |
++---------------------------+----------------------+----------+----------+
+| NN (PyTorch) + Word2Vec   | Binary ideology      | 0.5987   | 0.5862   |
++---------------------------+----------------------+----------+----------+
+| NN (PyTorch) + Word2Vec   | Multiclass ideology  | 0.4012   | 0.3328   |
++---------------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confussion_matrix_gender_w2v.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender (Word2Vec + neural network).
+
+.. figure:: _static/confussion_matrix_profession_w2v.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession (Word2Vec + neural network).
+
+.. figure:: _static/confussion_matrix_ideology_bin_w2v.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology (Word2Vec + neural network).
+
+.. figure:: _static/confussion_matrix_ideology_multi_w2v.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology (Word2Vec + neural network).
+
+Training and validation loss
+"""""""""""""""""""""""""""""
+
+.. figure:: _static/train_vs_val_loss.png
+   :width: 80%
+   :align: center
+
+   Training vs validation loss across epochs for the Word2Vec neural network.
+
+NN (PyTorch) + BERT
+^^^^^^^^^^^^^^^^^^^^
+The following table reports the test performance (accuracy and macro F1-score) of the PyTorch neural network using BERT-based embeddings.
+
++------------------------+----------------------+----------+----------+
+| Model                  | Task                 | Accuracy | F1-macro |
++========================+======================+==========+==========+
+| NN (PyTorch) + BERT    | Gender               | 0.6486   | 0.5894   |
++------------------------+----------------------+----------+----------+
+| NN (PyTorch) + BERT    | Profession           | 0.7051   | 0.4743   |
++------------------------+----------------------+----------+----------+
+| NN (PyTorch) + BERT    | Binary ideology      | 0.6348   | 0.6216   |
++------------------------+----------------------+----------+----------+
+| NN (PyTorch) + BERT    | Multiclass ideology  | 0.4587   | 0.3821   |
++------------------------+----------------------+----------+----------+
+
+Confusion matrices
+"""""""""""""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_bert.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender (BERT + neural network).
+
+.. figure:: _static/confusion_matrix_prof_bert.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession (BERT + neural network).
+
+.. figure:: _static/confusion_matrix_ideology_bin_bert.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology (BERT + neural network).
+
+.. figure:: _static/confusion_matrix_ideology_multi_bert.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology (BERT + neural network).
+
+Training and validation loss
+"""""""""""""""""""""""""""""
+
+.. figure:: _static/train_vs_validation_loss.png
+   :width: 80%
+   :align: center
+
+   Training vs validation loss across epochs for the BERT neural network.
+
+
