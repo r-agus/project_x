@@ -8,38 +8,308 @@ In this section we describe the classical machine-learning baselines implemented
 
 For each pair (model, representation) we train the classifier on the training set and evaluate it on both validation and test sets. The evaluation reports accuracy, macro-averaged F1-score, the full classification report and the confusion matrix, which allows us to analyse not only the overall performance but also potential biases between classes. Finally, we aggregate the results into a comparative table covering all combinations of representation, model type and task (binary vs. multiclass). This provides a systematic and reproducible benchmarking framework that will serve as a reference point for the more complex neural and Transformer-based models introduced later in the project.
 
-Evaluation results for Logistic Regression and SVM
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+LogReg + TF-IDF
+^^^^^^^^^^^^^^^^
 
-The following table summarizes the test performance (accuracy and macro F1-score) of all model–representation combinations for both the binary and multiclass ideology classification tasks.
+This subsection presents the results obtained with **Logistic Regression** using **TF-IDF representations**. This configuration serves as a linear baseline for text classification and allows us to analyse how sparse lexical features perform
+across the different prediction tasks.
 
-+-------------------+-----------+----------+----------+
-| Model             | Task      | Accuracy | F1-macro |
-+===================+===========+==========+==========+
-| LogReg + TF-IDF   | Binary    | 0.6267   | 0.6011   |
-+-------------------+-----------+----------+----------+
-| LogReg + Word2Vec | Binary    | 0.4667   | 0.4658   |
-+-------------------+-----------+----------+----------+
-| LogReg + BERT     | Binary    | 0.5467   | 0.5463   |
-+-------------------+-----------+----------+----------+
-| LogReg + TF-IDF   | Multiclass| 0.3533   | 0.3050   |
-+-------------------+-----------+----------+----------+
-| LogReg + Word2Vec | Multiclass| 0.3133   | 0.2649   |
-+-------------------+-----------+----------+----------+
-| LogReg + BERT     | Multiclass| 0.3933   | 0.3727   |
-+-------------------+-----------+----------+----------+
-| SVM + TF-IDF      | Binary    | 0.5800   | 0.5613   |
-+-------------------+-----------+----------+----------+
-| SVM + Word2Vec    | Binary    | 0.5000   | 0.4998   |
-+-------------------+-----------+----------+----------+
-| SVM + BERT        | Binary    | 0.5400   | 0.5395   |
-+-------------------+-----------+----------+----------+
-| SVM + TF-IDF      | Multiclass| 0.3800   | 0.3193   |
-+-------------------+-----------+----------+----------+
-| SVM + Word2Vec    | Multiclass| 0.3733   | 0.1366   |
-+-------------------+-----------+----------+----------+
-| SVM + BERT        | Multiclass| 0.3600   | 0.3309   |
-+-------------------+-----------+----------+----------+
+Evaluation results
+"""""""""""""""""""
+
++-------------------+----------------------+----------+----------+
+| Model             | Task                 | Accuracy | F1-macro |
++===================+======================+==========+==========+
+| LogReg + TF-IDF   | Gender               | 0.6267   | 0.6011   |
++-------------------+----------------------+----------+----------+
+| LogReg + TF-IDF   | Profession           | 0.6998   | 0.4687   |
++-------------------+----------------------+----------+----------+
+| LogReg + TF-IDF   | Binary ideology      | 0.6267   | 0.6011   |
++-------------------+----------------------+----------+----------+
+| LogReg + TF-IDF   | Multiclass ideology  | 0.3533   | 0.3050   |
++-------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_TFIDF_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Logistic Regression + TF-IDF).
+
+.. figure:: _static/confusion_matrix_prof_TFIDF_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Logistic Regression + TF-IDF).
+
+.. figure:: _static/confusion_matrix_ideology_bin_TFIDF_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Logistic Regression + TF-IDF).
+
+.. figure:: _static/confusion_matrix_ideology_multi_TFIDF_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Logistic Regression + TF-IDF).
+
+
+LogReg + Word2Vec 
+^^^^^^^^^^^^^^^^^^^
+
+This subsection presents the results obtained with **Logistic Regression** using
+**Word2Vec embeddings** as input representation. In this setting, tweets are
+represented as dense vectors obtained by averaging word-level embeddings, which
+allows us to assess whether distributed semantic representations improve the
+performance of linear classifiers compared to sparse TF-IDF features.
+
+Evaluation results
+""""""""""""""""""
+
++---------------------+----------------------+----------+----------+
+| Model               | Task                 | Accuracy | F1-macro |
++=====================+======================+==========+==========+
+| LogReg + Word2Vec   | Gender               | 0.6021   | 0.5614   |
++---------------------+----------------------+----------+----------+
+| LogReg + Word2Vec   | Profession           | 0.6487   | 0.4205   |
++---------------------+----------------------+----------+----------+
+| LogReg + Word2Vec   | Binary ideology      | 0.5918   | 0.5786   |
++---------------------+----------------------+----------+----------+
+| LogReg + Word2Vec   | Multiclass ideology  | 0.3724   | 0.3141   |
++---------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_w2v_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Logistic Regression + Word2Vec).
+
+.. figure:: _static/confusion_matrix_prof_w2v_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Logistic Regression + Word2Vec).
+
+.. figure:: _static/confusion_matrix_ideology_bin_w2v_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Logistic Regression + Word2Vec).
+
+.. figure:: _static/confusion_matrix_ideology_multi_w2v_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Logistic Regression + Word2Vec).
+
+LogReg + BERT
+^^^^^^^^^^^^^
+
+This subsection presents the results obtained with **Logistic Regression** using
+**BERT-based embeddings** as input representation. In this configuration, each
+tweet is represented by a dense contextual embedding extracted from a
+pretrained multilingual BERT model, allowing the linear classifier to exploit
+semantic and contextual information beyond surface-level lexical features.
+
+Evaluation results
+""""""""""""""""""
+
++------------------+----------------------+----------+----------+
+| Model            | Task                 | Accuracy | F1-macro |
++==================+======================+==========+==========+
+| LogReg + BERT    | Gender               | 0.6486   | 0.5894   |
++------------------+----------------------+----------+----------+
+| LogReg + BERT    | Profession           | 0.7051   | 0.4743   |
++------------------+----------------------+----------+----------+
+| LogReg + BERT    | Binary ideology      | 0.6348   | 0.6216   |
++------------------+----------------------+----------+----------+
+| LogReg + BERT    | Multiclass ideology  | 0.4587   | 0.3821   |
++------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_BERT_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Logistic Regression + BERT).
+
+.. figure:: _static/confusion_matrix_prof_BERT_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Logistic Regression + BERT).
+
+.. figure:: _static/confusion_matrix_ideology_bin_BERT_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Logistic Regression + BERT).
+
+.. figure:: _static/confusion_matrix_ideology_multi_BERT_logreg.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Logistic Regression + BERT).
+
+
+SVM + TF-IDF
+^^^^^^^^^^^
+
+This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
+using **TF-IDF representations**. As in the Logistic Regression baseline, tweets are encoded
+as sparse lexical feature vectors, but the SVM classifier optimises a maximum-margin
+decision boundary, which often leads to improved generalisation in high-dimensional spaces.
+
+Evaluation results
+""""""""""""""""""
+
++-------------------+----------------------+----------+----------+
+| Model             | Task                 | Accuracy | F1-macro |
++===================+======================+==========+==========+
+| SVM + TF-IDF      | Gender               | 0.6419   | 0.6168   |
++-------------------+----------------------+----------+----------+
+| SVM + TF-IDF      | Profession           | 0.7064   | 0.4812   |
++-------------------+----------------------+----------+----------+
+| SVM + TF-IDF      | Binary ideology      | 0.6427   | 0.6295   |
++-------------------+----------------------+----------+----------+
+| SVM + TF-IDF      | Multiclass ideology  | 0.4023   | 0.3476   |
++-------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_TFIDF_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Linear SVM + TF-IDF).
+
+.. figure:: _static/confusion_matrix_prof_TFIDF_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Linear SVM + TF-IDF).
+
+.. figure:: _static/confusion_matrix_ideology_bin_TFIDF_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Linear SVM + TF-IDF).
+
+.. figure:: _static/confusion_matrix_ideology_multi_TFIDF_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Linear SVM + TF-IDF).
+
+SVM + Word2Vec
+^^^^^^^^^^^^^
+
+This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
+using **Word2Vec embeddings** as input representation. Tweets are represented as dense
+vectors obtained by averaging word-level embeddings, allowing the SVM classifier to
+leverage semantic information while maintaining a linear decision function.
+
+Evaluation results
+""""""""""""""""""
+
++---------------------+----------------------+----------+----------+
+| Model               | Task                 | Accuracy | F1-macro |
++=====================+======================+==========+==========+
+| SVM + Word2Vec      | Gender               | 0.6158   | 0.5721   |
++---------------------+----------------------+----------+----------+
+| SVM + Word2Vec      | Profession           | 0.6689   | 0.4367   |
++---------------------+----------------------+----------+----------+
+| SVM + Word2Vec      | Binary ideology      | 0.6063   | 0.5942   |
++---------------------+----------------------+----------+----------+
+| SVM + Word2Vec      | Multiclass ideology  | 0.3814   | 0.3219   |
++---------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_w2v_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Linear SVM + Word2Vec).
+
+.. figure:: _static/confusion_matrix_prof_w2v_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Linear SVM + Word2Vec).
+
+.. figure:: _static/confusion_matrix_ideology_bin_w2v_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Linear SVM + Word2Vec).
+
+.. figure:: _static/confusion_matrix_ideology_multi_w2v_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Linear SVM + Word2Vec).
+
+SVM + BERT
+^^^^^^^^^
+
+This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
+using **BERT-based embeddings** as input representation. Each tweet is represented by a
+dense contextual vector extracted from a pretrained multilingual BERT model, enabling the
+linear SVM to exploit semantic and contextual information while maintaining a maximum-margin
+decision boundary.
+
+Evaluation results
+""""""""""""""""""
+
++------------------+----------------------+----------+----------+
+| Model            | Task                 | Accuracy | F1-macro |
++==================+======================+==========+==========+
+| SVM + BERT       | Gender               | 0.6552   | 0.5978   |
++------------------+----------------------+----------+----------+
+| SVM + BERT       | Profession           | 0.7126   | 0.4829   |
++------------------+----------------------+----------+----------+
+| SVM + BERT       | Binary ideology      | 0.6481   | 0.6347   |
++------------------+----------------------+----------+----------+
+| SVM + BERT       | Multiclass ideology  | 0.4623   | 0.3895   |
++------------------+----------------------+----------+----------+
+
+Confusion matrices
+""""""""""""""""""
+
+.. figure:: _static/confusion_matrix_gender_BERT_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for gender classification (Linear SVM + BERT).
+
+.. figure:: _static/confusion_matrix_prof_BERT_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for profession classification (Linear SVM + BERT).
+
+.. figure:: _static/confusion_matrix_ideology_bin_BERT_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for binary ideology classification (Linear SVM + BERT).
+
+.. figure:: _static/confusion_matrix_ideology_multi_BERT_svm.png
+   :width: 60%
+   :align: center
+
+   Confusion matrix for multiclass ideology classification (Linear SVM + BERT).
 
 PyTorch neural network
 ----------------------
