@@ -61,6 +61,10 @@ from TextVectorRepresentation import vectorRepresentation_TFIDF
 from TextVectorRepresentation import vectorRepresentation_Word2Vec
 from TextVectorRepresentation import vectorRepresentation_BERT
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import sys
 
 DATA_PATH = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 TEXT_COL = "tweet"
@@ -71,6 +75,24 @@ TARGET_LABELS = [
     ("gender", "Gender"),
     ("profession", "Profession"),
 ]
+_COLUMN_MAP = {
+    "gender": 0,
+    "profession": 1,
+    "ideology_binary": 2,
+    "ideology_multiclass": 3
+}
+
+def plot_confusion_matrix(y_true, y_pred, task_name, class_names=None):
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(6,5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=class_names,
+                yticklabels=class_names)
+    plt.title(f"Confusion Matrix - {task_name}")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.tight_layout()
+    plt.show()
 
 # To encode string labels into numbers
 def encode_labels(y_train, y_val, y_test):
@@ -233,7 +255,7 @@ def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test,
     print(confusion_matrix(y_test, y_pred_test))
 
     # It returns the trained model and the metrics
-    return model, accuracy_score(y_test, y_pred_test), f1_score(y_test, y_pred_test, average='macro')
+    return model, accuracy_score(y_test, y_pred_test), f1_score(y_test, y_pred_test, average='macro'), y_pred_val, y_pred_test
 
 
 def run_model_experiment(model_type, target_col, exp_name):
@@ -294,32 +316,38 @@ def run_model_experiment(model_type, target_col, exp_name):
 
     # TF-IDF
     print("\n USING TF-IDF REPRESENTATION ")
-    model_tfidf, acc_tfidf, f1_tfidf = train_and_evaluate_model(
+    model_tfidf, acc_tfidf, f1_tfidf, y_pred_val_tfidf, y_pred_test_tfidf = train_and_evaluate_model(
         model_type,
         X_train_tfidf, y_train_enc,
         X_val_tfidf, y_val_enc,
         X_test_tfidf, y_test_enc
     )
+    plot_confusion_matrix(y_test_enc, y_pred_test_tfidf, f"{exp_name} - TF-IDF", class_names=encoder.classes_)
+
     results["tfidf"] = (acc_tfidf, f1_tfidf)
 
     # WORD2VEC
     print("\n USING WORD2VEC REPRESENTATION ")
-    model_w2v, acc_w2v, f1_w2v = train_and_evaluate_model(
+    model_w2v, acc_w2v, f1_w2v, y_pred_val_w2v, y_pred_test_w2v = train_and_evaluate_model(
         model_type,
         X_train_w2v, y_train_enc,
         X_val_w2v, y_val_enc,
         X_test_w2v, y_test_enc
     )
+    plot_confusion_matrix(y_test_enc, y_pred_test_w2v, f"{exp_name} - Word2Vec", class_names=encoder.classes_)
+
     results["word2vec"] = (acc_w2v, f1_w2v)
 
     # BERT 
     print("\n USING BERT REPRESENTATION ")
-    model_bert, acc_bert, f1_bert = train_and_evaluate_model(
+    # BERT
+    model_bert, acc_bert, f1_bert, y_pred_val_bert, y_pred_test_bert = train_and_evaluate_model(
         model_type,
         X_train_bert, y_train_enc,
         X_val_bert, y_val_enc,
         X_test_bert, y_test_enc
     )
+    plot_confusion_matrix(y_test_enc, y_pred_test_bert, f"{exp_name} - BERT", class_names=encoder.classes_)
     results["bert"] = (acc_bert, f1_bert)
 
 
@@ -327,7 +355,8 @@ def run_model_experiment(model_type, target_col, exp_name):
 
 results = []
 if __name__ == "__main__":
-
+    output_file = "Results/evaluation_results_sklearn.txt"
+    sys.stdout = open(output_file, "w", encoding="utf-8")
     results = []
 
     for target_col, task_name in TARGET_LABELS:
@@ -351,3 +380,4 @@ if __name__ == "__main__":
     print("--------------------------------------------------------")
     for row in results:
         print("{:<22} {:<22} {:.4f}     {:.4f}".format(row[0], row[1], row[2], row[3]))
+    sys.stdout.close()
