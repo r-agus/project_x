@@ -48,8 +48,6 @@ autodoc_mock_imports = [
     "regex",
     "sentence_transformers",
     "gensim",
-    "TextVectorRepresentation",
-    "nn_pytorch",
 ]
 
 
@@ -69,6 +67,7 @@ nitpick_ignore = [
     ("py:class", "pandas.DataFrame"),
     ("py:class", "torch.nn.Module"),
     ("py:class", "torch.Tensor"),
+    ("py:class", "optional"),
     ("py:class", "model"),
     ("py:class", "nn.Module"),
     ("py:class", "WordCloud"),
@@ -81,8 +80,11 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
 
-
 html_theme = "shibuya"
+
+html_static_path = ["_static"]
+
+html_favicon = "_static/logo_html.png"
 
 # Ignore warnings about mocked imports so doctree builds stay clean when using
 # autodoc_mock_imports to avoid heavy ML dependencies during docs generation.

@@ -6,10 +6,13 @@
 Project X documentation
 =======================
 
-Welcome to the **Project X** documentation. This project analizes tweets from 
+Welcome to the **Project X** documentation. This project analyzes tweets from 
 the politicES dataset (with information from the Spanish political sphere, extracted
 from the X social network) and provides tools for data loading, text preprocessing, 
 and machine-learning models.
+
+This page contains technical documentation for the codebase, including module references
+and usage instructions. Conclusions can be found on pages linked in the "Additional guides" section.
 
 .. contents:: Table of Contents
    :local:
@@ -24,6 +27,14 @@ Install dependencies from the repository root::
 
 Modules
 -------
+
+init
+~~~~
+
+.. automodule:: init
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 exploratory_analysis
 ~~~~~~~~~~~~~~~~~~~~
@@ -70,4 +81,8 @@ stopwords
    :caption: Additional guides
 
    project_overview
+   exploratory_analysis
+   text_vector_rep
+   evaluation
+   contextual_embeddings
 

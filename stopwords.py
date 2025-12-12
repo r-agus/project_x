@@ -36,7 +36,7 @@ from nltk.corpus import stopwords as sw
 _EXTRAS = {
     'rt', 'https', 'http',
     'jaja', 'jajaja', 'jajajaja', 'jajajajaja',
-    'mas', 'hace',
+    'mas', 'hace', 'user', 'hashtag', 'politician', 'political_party'
 }
 
 def _load_spanish_stopwords() -> set[str]:
