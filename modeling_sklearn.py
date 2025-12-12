@@ -249,7 +249,7 @@ def run_model_experiment(model_type, target_col, exp_name):
 
     # Load dataset
     data = load_data(DATA_PATH)
-
+    data = data.sample(n=30000, random_state=42).reset_index()
     # Divide into train, validation, test
     train_df, val_df, test_df = divide_train_val_test(data)
 
