@@ -65,12 +65,12 @@ import numpy as np
 DATA_PATH = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 TEXT_COL = "tweet"
 TARGET_COL = "ideology_binary"  
-_COLUMN_MAP = {
-    "gender": 0,
-    "profession": 1,
-    "ideology_binary": 2,
-    "ideology_multiclass": 3
-}
+TARGET_LABELS = [
+    ("ideology_binary", "Ideology (Binary)"),
+    ("ideology_multiclass", "Ideology (Multiclass)"),
+    ("gender", "Gender"),
+    ("profession", "Profession"),
+]
 
 # To encode string labels into numbers
 def encode_labels(y_train, y_val, y_test):
@@ -328,37 +328,26 @@ def run_model_experiment(model_type, target_col, exp_name):
 results = []
 if __name__ == "__main__":
 
-    # LOGISTIC REGRESSION - BINARY
-    res = run_model_experiment("logreg", "ideology_binary", "Binary classification")
+    results = []
 
-    results.append(["LogReg + TF-IDF", "Binary", res["tfidf"][0], res["tfidf"][1]])
-    results.append(["LogReg + Word2Vec", "Binary", res["word2vec"][0], res["word2vec"][1]])
-    results.append(["LogReg + BERT", "Binary", res["bert"][0], res["bert"][1]])
+    for target_col, task_name in TARGET_LABELS:
+        # Logistic Regression
+        res = run_model_experiment("logreg", target_col, task_name)
 
-    # LOGISTIC REGRESSION - MULTICLASS
-    res = run_model_experiment("logreg", "ideology_multiclass", "Multiclass classification")
+        results.append(["LogReg + TF-IDF", task_name, res["tfidf"][0], res["tfidf"][1]])
+        results.append(["LogReg + Word2Vec", task_name, res["word2vec"][0], res["word2vec"][1]])
+        results.append(["LogReg + BERT", task_name, res["bert"][0], res["bert"][1]])
 
-    results.append(["LogReg + TF-IDF", "Multiclass", res["tfidf"][0], res["tfidf"][1]])
-    results.append(["LogReg + Word2Vec", "Multiclass", res["word2vec"][0], res["word2vec"][1]])
-    results.append(["LogReg + BERT", "Multiclass", res["bert"][0], res["bert"][1]])
+        # SVM
+        res = run_model_experiment("svm", target_col, task_name)
 
-    # SVM - BINARY
-    res = run_model_experiment("svm", "ideology_binary", "Binary classification")
-
-    results.append(["SVM + TF-IDF", "Binary", res["tfidf"][0], res["tfidf"][1]])
-    results.append(["SVM + Word2Vec", "Binary", res["word2vec"][0], res["word2vec"][1]])
-    results.append(["SVM + BERT", "Binary", res["bert"][0], res["bert"][1]])
-
-    # SVM - MULTICLASS
-    res = run_model_experiment("svm", "ideology_multiclass", "Multiclass classification")
-
-    results.append(["SVM + TF-IDF", "Multiclass", res["tfidf"][0], res["tfidf"][1]])
-    results.append(["SVM + Word2Vec", "Multiclass", res["word2vec"][0], res["word2vec"][1]])
-    results.append(["SVM + BERT", "Multiclass", res["bert"][0], res["bert"][1]])
+        results.append(["SVM + TF-IDF", task_name, res["tfidf"][0], res["tfidf"][1]])
+        results.append(["SVM + Word2Vec", task_name, res["word2vec"][0], res["word2vec"][1]])
+        results.append(["SVM + BERT", task_name, res["bert"][0], res["bert"][1]])
 
     # PRINT TABLE
     print("\n\n================== COMPARATIVE TABLE ===================")
-    print("{:<22} {:<12} {:<10} {:<10}".format("Model", "Task", "Accuracy", "F1-macro"))
+    print("{:<22} {:<22} {:<10} {:<10}".format("Model", "Task", "Accuracy", "F1-macro"))
     print("--------------------------------------------------------")
     for row in results:
-        print("{:<22} {:<12} {:.4f}     {:.4f}".format(row[0], row[1], row[2], row[3]))
+        print("{:<22} {:<22} {:.4f}     {:.4f}".format(row[0], row[1], row[2], row[3]))
