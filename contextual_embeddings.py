@@ -1,4 +1,6 @@
-# thematic_analysis.py
+"""
+Extension module for clustering texts (tweets) using KMeans and BERTopic with custom settings to increase the number of clusters.
+"""
 import pandas as pd
 import numpy as np
 import json
@@ -13,7 +15,16 @@ import hdbscan
 
 def cluster_with_kmeans(texts, embeddings, n_clusters=5):
     """
-    Aplica PCA + KMeans para agrupar textos en temas.
+    Apply PCA + KMeans to cluster texts into topics.
+
+    Args:
+        texts (pd.Series): Series of text data (tweets).
+        embeddings (np.ndarray): Corresponding embeddings for the texts.
+        n_clusters (int): Number of clusters/topics to form.
+    
+    Returns:
+        df_topics (pd.DataFrame): DataFrame with texts and their assigned cluster.
+        top_words_per_cluster (dict): Top words for each cluster based on TF-IDF.
     """
     pca = PCA(n_components=50, random_state=42)
     embeddings_reduced = pca.fit_transform(embeddings)
@@ -39,10 +50,20 @@ def cluster_with_kmeans(texts, embeddings, n_clusters=5):
 
 def cluster_with_bertopic(texts, embeddings, language="multilingual"):
     """
-    BERTopic ajustado para producir MÁS clusters, evitando un Topic 0 gigante.
+    Apply BERTopic with custom UMAP and HDBSCAN settings to cluster texts into topics.
+
+    Args:
+        texts (list): List of text data (tweets).
+        embeddings (np.ndarray): Corresponding embeddings for the texts.
+        language (str): Language setting for BERTopic.
+
+    Returns:
+        topic_model (BERTopic): Fitted BERTopic model.
+        topics (list): List of topic assignments for each text.
+        probs (list): List of probabilities for each topic assignment.
     """
 
-    # === 1. UMAP (reduce dimensión pero separa por vecindarios pequeños) ===
+    # UMAP (reduces dimension but separates by small neighborhoods)
     umap_model = UMAP(
         n_neighbors=15,
         n_components=5,
@@ -51,27 +72,27 @@ def cluster_with_bertopic(texts, embeddings, language="multilingual"):
         random_state=42
     )
 
-    # === 2. HDBSCAN (clave para aumentar número de clusters) ===
+    # HDBSCAN (key to increasing the number of clusters)
     hdbscan_model = hdbscan.HDBSCAN(
-        min_cluster_size=10,            # clusters pequeños
-        min_samples=5,                  # más sensibilidad
+        min_cluster_size=10,            # small clusters
+        min_samples=5,                  # more sensitivity
         metric='euclidean',
         cluster_selection_method='eom',
         cluster_selection_epsilon=0.05, # divide clusters grandes
         prediction_data=True
     )
 
-    # === 3. Vectorizer ===
+    # Vectorizer
     vectorizer_model = CountVectorizer(stop_words=list(stopwords))
 
-    # === 4. BERTopic ===
+    # BERTopic
     topic_model = BERTopic(
         language=language,
         umap_model=umap_model,
-        hdbscan_model=hdbscan_model,  # sustituye al clustering por defecto
+        hdbscan_model=hdbscan_model,  # replaces the default clustering
         vectorizer_model=vectorizer_model,
-        min_topic_size=10,            # permite temas pequeños
-        nr_topics=None,               # NO fusionar automáticamente temas
+        min_topic_size=10,            # allow small topics
+        nr_topics=None,               # do not automatically merge topics
         verbose=True
     )
 
@@ -82,6 +103,14 @@ def cluster_with_bertopic(texts, embeddings, language="multilingual"):
 
 
 def save_clusters_to_json(df_topics, filename="clusters_kmeans.json", max_tweets=50):
+    """
+    Save clustered tweets to a JSON file for inspection.
+    
+    Args:
+        df_topics (pd.DataFrame): DataFrame with 'tweet' and 'cluster' columns.
+        filename (str): Output JSON filename.
+        max_tweets (int): Maximum number of tweets to save per cluster.
+    """
     output_data = {}
     clusters = sorted(df_topics['cluster'].unique())
     
@@ -94,13 +123,9 @@ def save_clusters_to_json(df_topics, filename="clusters_kmeans.json", max_tweets
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, ensure_ascii=False, indent=4)
     
-    print(f"Archivo de inspección guardado: {filename}")
+    print(f"Saved inspection file: {filename}")
 
 
-
-# =======================================================
-#                  EJEMPLO DE USO COMPLETO
-# =======================================================
 if __name__ == "__main__":
     import TextVectorRepresentation as TV
     
@@ -118,10 +143,8 @@ if __name__ == "__main__":
     x_BERT_train, x_BERT_val, x_BERT_test = TV.vectorRepresentation_BERT(X_train, X_val, X_test)
     embeddings = np.vstack([x_BERT_train, x_BERT_val, x_BERT_test])
 
-    # -------------------------------
-    # A) KMeans
-    # -------------------------------
-    print("--- Ejecutando KMeans ---")
+    # KMeans
+    print("--- Running KMeans ---")
     df_topics, top_words = cluster_with_kmeans(texts, embeddings, n_clusters=10)
     
     print("Top words per cluster (KMeans):")
@@ -129,16 +152,14 @@ if __name__ == "__main__":
         print(f"Cluster {cluster}: {', '.join(words)}")
 
     cluster_counts = df_topics['cluster'].value_counts().sort_index()
-    print("\nNúmero de tweets por cluster (KMeans):")
+    print("\nNNumber of tweets per cluster (KMeans):")
     for cluster_id, count in cluster_counts.items():
         print(f"Cluster {cluster_id}: {count} tweets")
 
     save_clusters_to_json(df_topics, filename="clusters_kmeans_inspection.json", max_tweets=50)
 
-    # -------------------------------
-    # B) BERTopic con más clusters
-    # -------------------------------
-    print("\n--- Ejecutando BERTopic (más clusters) ---")
+    # BERTopic with more clusters
+    print("\n--- Running BERTopic (more clusters) ---")
     topic_model, topics, probs = cluster_with_bertopic(texts.tolist(), embeddings)
     
     print("\nBERTopic info:")
@@ -146,9 +167,9 @@ if __name__ == "__main__":
     print(topic_info)
 
     bertopic_counts = pd.Series(topics).value_counts().sort_index()
-    print("\nNúmero de tweets por topic (BERTopic):")
+    print("\nNNumber of tweets per topic (BERTopic):")
     for topic_id, count in bertopic_counts.items():
         print(f"Topic {topic_id}: {count} tweets")
         
-    topic_info.to_json("bertopic_info_representativos.json", orient='records', indent=4, force_ascii=False)
-    print("Archivo BERTopic guardado: bertopic_info_representativos.json")
+    topic_info.to_json("bertopic_info_representative.json", orient='records', indent=4, force_ascii=False)
+    print("Archivo BERTopic guardado: bertopic_info_representative.json")
