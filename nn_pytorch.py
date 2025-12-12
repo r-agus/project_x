@@ -27,7 +27,7 @@ from TextVectorRepresentation import (
     separate_x_y_vectors,
     divide_train_val_test
 )
-from main import load_data
+from init import load_data
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
@@ -111,6 +111,9 @@ def map_politicES_labels(y_raw):
     Returns:
         torch.Tensor: Mapped labels in numerical format.
     """
+    if hasattr(y_raw, 'values'):
+        y_raw = y_raw.values
+
     y_mapped = []
     for row in y_raw:
         gender = 0 if row[0] == "male" else 1
