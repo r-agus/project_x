@@ -41,18 +41,21 @@ class NeuralNetwork(nn.Module):
     """
     A feedforward neural network for multi-class classification.
     """
-    def __init__(self):
+    def __init__(self, input_dim=768):
         """
         Initializes the neural network layers.
         The network consists of:
         - An input layer that flattens the input tensor.
         - A sequence of linear layers with ReLU activations.
         - An output layer with 4 outputs corresponding to the 4 classification tasks.
+        
+        Args:
+            input_dim (int): The dimension of input features (768 for BERT, 100/200 for Word2Vec).
         """
         super().__init__()
 
         self.shared = nn.Sequential(
-            nn.Linear(200, 512),
+            nn.Linear(input_dim, 512),
             nn.BatchNorm1d(512),
             nn.GELU(),
             nn.Dropout(0.3),
@@ -139,17 +142,13 @@ def map_politicES_labels(y_raw):
 # ============================
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = NeuralNetwork().to(device)
-
 print(f"Using {device} device")
-print(model)
-
 
 # ============================
 #   LOAD DATA
 # ============================
 
-if 'y_train_30000.npy' not in os.listdir('ProcessedData'):
+if not os.path.exists('ProcessedData') or 'y_train_30000.npy' not in os.listdir('ProcessedData'):
     path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
     data = load_data(path)
     n = 3000
@@ -161,13 +160,12 @@ if 'y_train_30000.npy' not in os.listdir('ProcessedData'):
     X_val, y_val = separate_x_y_vectors(val_data)
     X_test, y_test = separate_x_y_vectors(test_data)
 
-
-# ============================
-#   BERT VECTORIZATION
-# ============================
-
-# x_train, x_val, x_test = vectorRepresentation_BERT(X_train, X_val, X_test)
+    X_train, X_val, X_test = vectorRepresentation_BERT(X_train, X_val, X_test)
 else:
+    X_train = np.load("ProcessedData/x_word2vec_train_30000.npy")
+    X_val = np.load("ProcessedData/x_word2vec_val_30000.npy")
+    X_test = np.load("ProcessedData/x_word2vec_test_30000.npy")
+
     y_train = np.load('ProcessedData/y_train_30000.npy', allow_pickle=True)
     y_val = np.load('ProcessedData/y_val_30000.npy', allow_pickle=True)
     y_test = np.load('ProcessedData/y_test_30000.npy', allow_pickle=True)
@@ -176,20 +174,18 @@ y_train_mapped = map_politicES_labels(y_train)
 y_val_mapped = map_politicES_labels(y_val)
 y_test_mapped = map_politicES_labels(y_test)
 
+x_train_dense = np.array(X_train) if not hasattr(X_train, 'toarray') else X_train.toarray()
+x_val_dense   = np.array(X_val) if not hasattr(X_val, 'toarray') else X_val.toarray()
+x_test_dense  = np.array(X_test) if not hasattr(X_test, 'toarray') else X_test.toarray()
 
 # ============================
-#   DATA LOADERS
+#   MODEL (input_dim based on data)
 # ============================
 
-X_train = np.load("ProcessedData/x_word2vec_train_30000.npy")
-X_val = np.load("ProcessedData/x_word2vec_val_30000.npy")
-X_test = np.load("ProcessedData/x_word2vec_test_30000.npy")
-
-# For BERT embeddings, the output is already dense
-x_train_dense = X_train
-x_val_dense   = X_val
-x_test_dense  = X_test
-
+input_dim = x_train_dense.shape[1]
+print(f"Input dimension: {input_dim}")
+model = NeuralNetwork(input_dim=input_dim).to(device)
+print(model)
 
 train_loader = DataLoader(
     TensorDataset(torch.tensor(x_train_dense, dtype=torch.float32), y_train_mapped),
