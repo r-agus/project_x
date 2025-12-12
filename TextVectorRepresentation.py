@@ -201,7 +201,7 @@ def vectorRepresentation_Word2Vec(xtrain, xval, xtest):
     try:
         model = Word2Vec(
             sentences=train_tokens,
-            vector_size=100,
+            vector_size=200,
             window=5,
             min_count=2,
             workers=4,
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     
     # x_tfidf_train, x_tfidf_val, x_tfidf_test = vectorRepresentation_TFIDF(X_train, X_val, X_test)
     # x_BERT_train, x_BERT_val, x_BERT_test = vectorRepresentation_BERT(X_train, X_val, X_test)
-    # x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
+    x_word2vec_train, x_word2vec_val, x_word2vec_test = vectorRepresentation_Word2Vec(X_train, X_val, X_test)
     
     # Create directory if it doesn't exist
     os.makedirs('ProcessedData', exist_ok=True)
@@ -258,9 +258,9 @@ if __name__ == "__main__":
     # np.save('ProcessedData/x_BERT_train_30000.npy', x_BERT_train)
     # np.save('ProcessedData/x_BERT_val_30000.npy', x_BERT_val)
     # np.save('ProcessedData/x_BERT_test_30000.npy', x_BERT_test)
-    # np.save('ProcessedData/x_word2vec_train_30000.npy', x_word2vec_train)
-    # np.save('ProcessedData/x_word2vec_val_30000.npy', x_word2vec_val)
-    # np.save('ProcessedData/x_word2vec_test_30000.npy', x_word2vec_test)
+    np.save('ProcessedData/x_word2vec_train_30000.npy', x_word2vec_train)
+    np.save('ProcessedData/x_word2vec_val_30000.npy', x_word2vec_val)
+    np.save('ProcessedData/x_word2vec_test_30000.npy', x_word2vec_test)
     
     # Save labels
     np.save('ProcessedData/y_train_30000.npy', y_train.values if hasattr(y_train, 'values') else y_train)

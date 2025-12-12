@@ -1,0 +1,74 @@
+
+========== FULL METRICS ==========
+
+
+===== GENDER =====
+Accuracy: 0.6473
+Precision (macro): 0.5925
+Recall (macro):    0.5837
+F1-score (macro):  0.5858
+ROC-AUC:           0.6254
+
+              precision    recall  f1-score   support
+
+           0       0.72      0.78      0.75      2993
+           1       0.47      0.39      0.43      1507
+
+    accuracy                           0.65      4500
+   macro avg       0.59      0.58      0.59      4500
+weighted avg       0.63      0.65      0.64      4500
+
+
+===== PROFESSION =====
+Accuracy: 0.6998
+Precision (macro): 0.7864
+Recall (macro):    0.4761
+F1-score (macro):  0.4687
+ROC-AUC:           0.7384
+
+              precision    recall  f1-score   support
+
+           0       0.62      0.62      0.62      1550
+           1       0.74      0.80      0.77      2728
+           2       1.00      0.01      0.02       222
+
+    accuracy                           0.70      4500
+   macro avg       0.79      0.48      0.47      4500
+weighted avg       0.71      0.70      0.68      4500
+
+
+===== IDEOLOGY_BIN =====
+Accuracy: 0.6242
+Precision (macro): 0.6160
+Recall (macro):    0.6119
+F1-score (macro):  0.6124
+ROC-AUC:           0.6725
+
+              precision    recall  f1-score   support
+
+           0       0.65      0.71      0.68      2533
+           1       0.58      0.51      0.54      1967
+
+    accuracy                           0.62      4500
+   macro avg       0.62      0.61      0.61      4500
+weighted avg       0.62      0.62      0.62      4500
+
+
+===== IDEOLOGY_MULTI =====
+Accuracy: 0.4404
+Precision (macro): 0.3985
+Recall (macro):    0.3644
+F1-score (macro):  0.3634
+ROC-AUC:           0.6603
+
+              precision    recall  f1-score   support
+
+           0       0.39      0.26      0.31       880
+           1       0.47      0.60      0.53      1653
+           2       0.44      0.50      0.47      1418
+           3       0.30      0.10      0.15       549
+
+    accuracy                           0.44      4500
+   macro avg       0.40      0.36      0.36      4500
+weighted avg       0.42      0.44      0.42      4500
+
