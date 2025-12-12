@@ -20,17 +20,18 @@ from sklearn.metrics import (
 )
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import numpy as np
-# from TextVectorRepresentation import (
-#     vectorRepresentation_BERT,
-#     vectorRepresentation_TFIDF,
-#     vectorRepresentation_Word2Vec,
-#     separate_x_y_vectors,
-#     divide_train_val_test
-# )
-# from main import load_data
+from TextVectorRepresentation import (
+    vectorRepresentation_BERT,
+    vectorRepresentation_TFIDF,
+    vectorRepresentation_Word2Vec,
+    separate_x_y_vectors,
+    divide_train_val_test
+)
+from main import load_data
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+import os
 
 # ============================
 #   MODEL
@@ -145,16 +146,17 @@ print(model)
 #   LOAD DATA
 # ============================
 
-# path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
-# data = load_data(path)
-# n = 3000
-# data = data.sample(n=n, random_state=42)
+if 'y_train_30000.npy' not in os.listdir('ProcessedData'):
+    path = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
+    data = load_data(path)
+    n = 3000
+    data = data.sample(n=n, random_state=42)
 
-# train_data, val_data, test_data = divide_train_val_test(data)
+    train_data, val_data, test_data = divide_train_val_test(data)
 
-# X_train, y_train = separate_x_y_vectors(train_data)
-# X_val, y_val = separate_x_y_vectors(val_data)
-# X_test, y_test = separate_x_y_vectors(test_data)
+    X_train, y_train = separate_x_y_vectors(train_data)
+    X_val, y_val = separate_x_y_vectors(val_data)
+    X_test, y_test = separate_x_y_vectors(test_data)
 
 
 # ============================
@@ -162,9 +164,10 @@ print(model)
 # ============================
 
 # x_train, x_val, x_test = vectorRepresentation_BERT(X_train, X_val, X_test)
-y_train = np.load('ProcessedData/y_train_30000.npy', allow_pickle=True)
-y_val = np.load('ProcessedData/y_val_30000.npy', allow_pickle=True)
-y_test = np.load('ProcessedData/y_test_30000.npy', allow_pickle=True)
+else:
+    y_train = np.load('ProcessedData/y_train_30000.npy', allow_pickle=True)
+    y_val = np.load('ProcessedData/y_val_30000.npy', allow_pickle=True)
+    y_test = np.load('ProcessedData/y_test_30000.npy', allow_pickle=True)
 
 y_train_mapped = map_politicES_labels(y_train)
 y_val_mapped = map_politicES_labels(y_val)
