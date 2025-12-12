@@ -6,9 +6,10 @@
 Project X documentation
 =======================
 
-Welcome to the **Project X** documentation. This project provides tools for
-data loading, text preprocessing, and machine-learning models for the
-politicES dataset.
+Welcome to the **Project X** documentation. This project analizes tweets from 
+the politicES dataset (with information from the Spanish political sphere, extracted
+from the X social network) and provides tools for data loading, text preprocessing, 
+and machine-learning models.
 
 .. contents:: Table of Contents
    :local:
@@ -24,10 +25,10 @@ Install dependencies from the repository root::
 Modules
 -------
 
-main
-~~~~
+exploratory_analysis
+~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: main
+.. automodule:: exploratory_analysis
    :members:
    :undoc-members:
    :show-inheritance:

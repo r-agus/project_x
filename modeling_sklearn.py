@@ -1,6 +1,51 @@
+"""
+Model Training and Evaluation Pipeline
+======================================
+
+This module defines the training and evaluation workflow used in the project for
+benchmarking classical machine learning models on political ideology
+classification tasks.
+
+It provides three core capabilities:
+
+1. **Label encoding**  
+   Converts categorical labels from the dataset into numerical format using a
+   scikit-learn `LabelEncoder`, ensuring consistent mapping across train,
+   validation, and test splits.
+
+2. **Model training and evaluation**  
+   Implements a unified function for training either Logistic Regression or
+   Linear SVM models.  
+   The evaluation includes:
+   - accuracy,
+   - macro-averaged F1-score,
+   - classification report,
+   - confusion matrix.  
+   Metrics are produced for both the validation and test sets.
+
+3. **Experiment orchestration**  
+   The function `run_model_experiment` coordinates a full experiment for a given
+   target label (binary or multiclass) by:
+   - loading dataset splits from ``TextVectorRepresentation.py``,
+   - obtaining TF-IDF, Word2Vec, and BERT embeddings from the same module,
+   - training and evaluating the chosen model on each representation,
+   - returning the aggregated metrics for comparison.
+
+This module does *not* implement text vectorization itself; instead, it acts as
+an evaluation layer on top of the embeddings generated externally.
+
+The ``__main__`` block runs a complete set of experiments and prints a
+comparative performance table for all combinations of:
+- representation method (TF-IDF, Word2Vec, BERT),
+- model type (Logistic Regression, Linear SVM),
+- classification task (binary vs. multiclass).
+
+The goal is to facilitate systematic, repeatable benchmarking across different
+feature representations while keeping the training logic centralised and
+consistent.
+"""
+
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
@@ -11,59 +56,116 @@ from sklearn.metrics import (
     f1_score,
 )
 
-from stopwords import stopwords 
+from TextVectorRepresentation import load_data, divide_train_val_test, separate_x_y_vectors
+from TextVectorRepresentation import vectorRepresentation_TFIDF
+from TextVectorRepresentation import vectorRepresentation_Word2Vec
+from TextVectorRepresentation import vectorRepresentation_BERT
 
 DATA_PATH = "Datasets/EvaluationData/politicES_phase_2_train_public.csv"
 TEXT_COL = "tweet"
 TARGET_COL = "ideology_binary"  
 
-def load_and_split(data_path, text_col=TEXT_COL, target_col=TARGET_COL,
-                   test_size=0.2, val_size=0.1, random_state=42):
-    df = pd.read_csv(data_path)
-    # We delete the rows with no text or no label
-    df = df.dropna(subset=[text_col, target_col])
-
-    X = df[text_col].astype(str)
-    y = df[target_col]
-    # Now we split the data into train, val and test 
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=(test_size + val_size), stratify=y, random_state=random_state)
-
-    # Now X_temp and y_temp contain both val and test data, we need to split them again to get val and test sets
-    val_ratio = val_size / (test_size + val_size)
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp,
-        test_size=(1 - val_ratio), 
-        stratify=y_temp,
-        random_state=random_state
-    )
-
-    return X_train, X_val, X_test, y_train, y_val, y_test
-
 # To encode string labels into numbers
 def encode_labels(y_train, y_val, y_test):
+    """
+    Encodes string labels into integer values for machine learning models.
+
+    This function fits a LabelEncoder on the training labels and applies the same
+    encoding to the validation and test labels, ensuring consistency across splits.
+
+    Parameters
+    ----------
+    y_train : array-like
+        Target labels from the training set.
+    y_val : array-like
+        Target labels from the validation set.
+    y_test : array-like
+        Target labels from the test set.
+
+    Returns
+    -------
+    y_train_enc : ndarray
+        Encoded labels for the training set.
+    y_val_enc : ndarray
+        Encoded labels for the validation set.
+    y_test_enc : ndarray
+        Encoded labels for the test set.
+    encoder : LabelEncoder
+        The fitted LabelEncoder instance, useful for inverse-transforming predictions.
+    """
     encoder = LabelEncoder()
     y_train_enc = encoder.fit_transform(y_train)
     y_val_enc = encoder.transform(y_val)
     y_test_enc = encoder.transform(y_test)
     return y_train_enc, y_val_enc, y_test_enc, encoder
 
+# Build Word2Vec embeddings
+def build_word2vec(X_train, X_val, X_test):
+    """
+    Generates Word2Vec embeddings for train, validation and test sets
+    using your group's implementation.
+    """
 
-# TF-IDF with our custom stopwords list
-def build_tfidf(X_train, X_val, X_test):
-    vectorizer = TfidfVectorizer(
-        max_features=20_000,
-        ngram_range=(1, 2),
-        stop_words=list(stopwords)  # our custom stopwords list
+    train_w2v, val_w2v, test_w2v = vectorRepresentation_Word2Vec(
+        X_train, X_val, X_test
     )
 
-    X_train_tfidf = vectorizer.fit_transform(X_train)
-    X_val_tfidf = vectorizer.transform(X_val)
-    X_test_tfidf = vectorizer.transform(X_test)
+    return train_w2v, val_w2v, test_w2v
 
-    return vectorizer, X_train_tfidf, X_val_tfidf, X_test_tfidf
+# Build BERT embeddings
+def build_bert(X_train, X_val, X_test):
+    """
+    Generates BERT embeddings for train, validation and test sets
+    using your group's implementation.
+    """
+    train_bert, val_bert, test_bert = vectorRepresentation_BERT(
+        X_train, X_val, X_test
+    )
+    return train_bert, val_bert, test_bert
+
+
 
 
 def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test, y_test):
+    """
+    Trains and evaluates a machine learning model (Logistic Regression or Linear SVM)
+    using the provided feature representations (TF-IDF, Word2Vec or BERT).
+
+    The function performs:
+        1. Model creation based on `model_type`
+        2. Training on the training set
+        3. Evaluation on validation and test sets
+        4. Printing of accuracy, macro F1-score, classification report,
+           and confusion matrix for both validation and test sets.
+
+    Parameters
+    ----------
+    model_type : str
+        Type of model to train. Must be:
+            - "logreg" → Logistic Regression
+            - "svm" → Linear SVM
+    X_train : array-like or sparse matrix
+        Feature vectors for the training set.
+    y_train : array-like
+        Encoded labels for the training set.
+    X_val : array-like or sparse matrix
+        Feature vectors for the validation set.
+    y_val : array-like
+        Encoded labels for the validation set.
+    X_test : array-like or sparse matrix
+        Feature vectors for the test set.
+    y_test : array-like
+        Encoded labels for the test set.
+
+    Returns
+    -------
+    model : estimator object
+        The trained model instance.
+    accuracy : float
+        Accuracy score on the test set.
+    f1_macro : float
+        Macro-averaged F1 score on the test set.
+    """
 
     # We create the model
     if model_type == "logreg":
@@ -129,70 +231,118 @@ def train_and_evaluate_model(model_type, X_train, y_train, X_val, y_val, X_test,
 
 def run_model_experiment(model_type, target_col, exp_name):
     """
-    Runs a model experiment by training and evaluating a specified model type on the given target column.
+    Runs a model experiment using three text representations: TF-IDF, Word2Vec and BERT.
+    Trains and evaluates the specified model type on each representation.
 
-    Parameters:
-        model_type (str): The type of model to train ('logreg' for Logistic Regression, 'svm' for Support Vector Machine).
-        target_col (str): The name of the target column in the dataset.
-        exp_name (str): A descriptive name for the experiment.
+    Returns
+    -------
+    dict
+        Dictionary with accuracy and macro F1-score for each representation::
 
-    Returns:
-        model: The trained model instance.
-        encoder: The label encoder used for target labels.
-        vectorizer: The TF-IDF vectorizer used for text features.
-        acc (float): Accuracy score on the test set.
-        f1 (float): Macro-averaged F1 score on the test set.
+            {
+                "tfidf": (accuracy, f1_macro),
+                "word2vec": (accuracy, f1_macro),
+                "bert": (accuracy, f1_macro)
+            }
     """
     print(f"\n{model_type.upper()} EXPERIMENT: {exp_name}")
 
-    # Load and split the data
-    X_train, X_val, X_test, y_train, y_val, y_test = load_and_split(
-        DATA_PATH,
-        text_col=TEXT_COL,
-        target_col=target_col
-    )
+    # Load dataset
+    data = load_data(DATA_PATH)
+
+    # Divide into train, validation, test
+    train_df, val_df, test_df = divide_train_val_test(data)
+
+    # Separate X and y
+    X_train, y_train_df = separate_x_y_vectors(train_df)
+    X_val, y_val_df = separate_x_y_vectors(val_df)
+    X_test, y_test_df = separate_x_y_vectors(test_df)
+
+    # Extract target column (ideology_binary or ideology_multiclass)
+    y_train = y_train_df[target_col]
+    y_val = y_val_df[target_col]
+    y_test = y_test_df[target_col]
 
     # Labels -> numbers (integers)
     y_train_enc, y_val_enc, y_test_enc, encoder = encode_labels(y_train, y_val, y_test)
 
     # TF-IDF vectorization
-    vectorizer, X_train_tfidf, X_val_tfidf, X_test_tfidf = build_tfidf(
-        X_train, X_val, X_test
+    X_train_tfidf, X_val_tfidf, X_test_tfidf = vectorRepresentation_TFIDF(X_train, X_val, X_test)
+
+    # WORD2VEC representation
+    X_train_w2v, X_val_w2v, X_test_w2v = build_word2vec(X_train, X_val, X_test)
+
+    # BERT representation
+    X_train_bert, X_val_bert, X_test_bert = build_bert(X_train, X_val, X_test)
+
+
+    results = {}
+
+    # TF-IDF
+    print("\n USING TF-IDF REPRESENTATION ")
+    model_tfidf, acc_tfidf, f1_tfidf = train_and_evaluate_model(
+        model_type,
+        X_train_tfidf, y_train_enc,
+        X_val_tfidf, y_val_enc,
+        X_test_tfidf, y_test_enc
     )
+    results["tfidf"] = (acc_tfidf, f1_tfidf)
 
-    # Train and evaluate the model
-    model, acc, f1 = train_and_evaluate_model(model_type, X_train_tfidf, y_train_enc, X_val_tfidf, y_val_enc, X_test_tfidf, y_test_enc)
+    # WORD2VEC
+    print("\n USING WORD2VEC REPRESENTATION ")
+    model_w2v, acc_w2v, f1_w2v = train_and_evaluate_model(
+        model_type,
+        X_train_w2v, y_train_enc,
+        X_val_w2v, y_val_enc,
+        X_test_w2v, y_test_enc
+    )
+    results["word2vec"] = (acc_w2v, f1_w2v)
 
-    return model, encoder, vectorizer, acc, f1
+    # BERT 
+    print("\n USING BERT REPRESENTATION ")
+    model_bert, acc_bert, f1_bert = train_and_evaluate_model(
+        model_type,
+        X_train_bert, y_train_enc,
+        X_val_bert, y_val_enc,
+        X_test_bert, y_test_enc
+    )
+    results["bert"] = (acc_bert, f1_bert)
+
+
+    return results
 
 results = []
 if __name__ == "__main__":
 
     # LOGISTIC REGRESSION - BINARY
-    model, encoder, vectorizer, acc, f1 = run_model_experiment(
-        "logreg", "ideology_binary", "Binary classification"
-    )
-    results.append(["Logistic Regression", "Binary", acc, f1])
+    res = run_model_experiment("logreg", "ideology_binary", "Binary classification")
+
+    results.append(["LogReg + TF-IDF", "Binary", res["tfidf"][0], res["tfidf"][1]])
+    results.append(["LogReg + Word2Vec", "Binary", res["word2vec"][0], res["word2vec"][1]])
+    results.append(["LogReg + BERT", "Binary", res["bert"][0], res["bert"][1]])
 
     # LOGISTIC REGRESSION - MULTICLASS
-    model, encoder, vectorizer, acc, f1 = run_model_experiment(
-        "logreg", "ideology_multiclass", "Multiclass classification"
-    )
-    results.append(["Logistic Regression", "Multiclass", acc, f1])
+    res = run_model_experiment("logreg", "ideology_multiclass", "Multiclass classification")
+
+    results.append(["LogReg + TF-IDF", "Multiclass", res["tfidf"][0], res["tfidf"][1]])
+    results.append(["LogReg + Word2Vec", "Multiclass", res["word2vec"][0], res["word2vec"][1]])
+    results.append(["LogReg + BERT", "Multiclass", res["bert"][0], res["bert"][1]])
 
     # SVM - BINARY
-    model, encoder, vectorizer, acc, f1 = run_model_experiment(
-        "svm", "ideology_binary", "Binary classification"
-    )
-    results.append(["SVM", "Binary", acc, f1])
+    res = run_model_experiment("svm", "ideology_binary", "Binary classification")
+
+    results.append(["SVM + TF-IDF", "Binary", res["tfidf"][0], res["tfidf"][1]])
+    results.append(["SVM + Word2Vec", "Binary", res["word2vec"][0], res["word2vec"][1]])
+    results.append(["SVM + BERT", "Binary", res["bert"][0], res["bert"][1]])
 
     # SVM - MULTICLASS
-    model, encoder, vectorizer, acc, f1 = run_model_experiment(
-        "svm", "ideology_multiclass", "Multiclass classification"
-    )
-    results.append(["SVM", "Multiclass", acc, f1])
+    res = run_model_experiment("svm", "ideology_multiclass", "Multiclass classification")
 
-    # ======= PRINT TABLE =======
+    results.append(["SVM + TF-IDF", "Multiclass", res["tfidf"][0], res["tfidf"][1]])
+    results.append(["SVM + Word2Vec", "Multiclass", res["word2vec"][0], res["word2vec"][1]])
+    results.append(["SVM + BERT", "Multiclass", res["bert"][0], res["bert"][1]])
+
+    # PRINT TABLE
     print("\n\n================== COMPARATIVE TABLE ===================")
     print("{:<22} {:<12} {:<10} {:<10}".format("Model", "Task", "Accuracy", "F1-macro"))
     print("--------------------------------------------------------")
