@@ -160,7 +160,7 @@ Confusion matrices
 
 
 SVM + TF-IDF
-^^^^^^^^^^^
+^^^^^^^^^^^^
 
 This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
 using **TF-IDF representations**. As in the Logistic Regression baseline, tweets are encoded
@@ -210,7 +210,7 @@ Confusion matrices
    Confusion matrix for multiclass ideology classification (Linear SVM + TF-IDF).
 
 SVM + Word2Vec
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
 using **Word2Vec embeddings** as input representation. Tweets are represented as dense
@@ -260,7 +260,7 @@ Confusion matrices
    Confusion matrix for multiclass ideology classification (Linear SVM + Word2Vec).
 
 SVM + BERT
-^^^^^^^^^
+^^^^^^^^^^
 
 This subsection presents the results obtained with a **Linear Support Vector Machine (SVM)**
 using **BERT-based embeddings** as input representation. Each tweet is represented by a
