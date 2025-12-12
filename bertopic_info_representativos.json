@@ -1,0 +1,332 @@
+[
+    {
+        "Topic":-1,
+        "Count":228,
+        "Name":"-1_2022_gobierno_podcast_nuevo",
+        "Representation":[
+            "2022",
+            "gobierno",
+            "podcast",
+            "nuevo",
+            "hoy",
+            "castillón",
+            "confidencial",
+            "gracias",
+            "partido",
+            "cafetera"
+        ],
+        "Representative_Docs":[
+            "📣 Nuevo Podcast! \"Castillón Confidencial jueves 24 noviembre 2022\" en @user",
+            "📣 Nuevo Podcast! \"Castillón Confidencial lunes 10 octubre 2022\" en @user",
+            "📣 Nuevo Podcast! \"Castillón Confidencial miércoles 23 noviembre 2022\" en @user"
+        ]
+    },
+    {
+        "Topic":0,
+        "Count":8834,
+        "Name":"0_si_hoy_españa_gobierno",
+        "Representation":[
+            "si",
+            "hoy",
+            "españa",
+            "gobierno",
+            "gracias",
+            "años",
+            "ser",
+            "día",
+            "madrid",
+            "ley"
+        ],
+        "Representative_Docs":[
+            "Hoy es el día internacional de las personas con discapacidad y la nueva Ley del Deporte supone una gran avance para ellas.. Es la Ley del Deporte más inclusiva.. [HASHTAG]. . . .",
+            "@user Pero vamos… que se acercan elecciones y será por eso. Porque si hasta ahora han pasado… En 17 años que llevo aquí, nunca he visto la ciudad tan sucia.",
+            "Después de dos días sin poder moverme, creo que me va a tocar una de las peores cosas que se pueden hacer ahora mismo: ir a las urgencias de Madrid 🌚"
+        ]
+    },
+    {
+        "Topic":1,
+        "Count":226,
+        "Name":"1_gobierno_madrid_congreso_si",
+        "Representation":[
+            "gobierno",
+            "madrid",
+            "congreso",
+            "si",
+            "hoy",
+            "dice",
+            "presidente",
+            "dicho",
+            "ley",
+            "partido"
+        ],
+        "Representative_Docs":[
+            "Aguirre y [POLITICIAN] afirman que como desde San Fernando vecinos pidieron que llegara el Metro a la ciudad, ahora se tienen que callar porque el Gobierno de la Comunidad de Madrid lo hizo mal. Tan mal que si bien los vecinos a veces tienen metro, pueden perder sus casas",
+            "Cuando gobernaba [POLITICIAN] sucedió algo similar y salieron todos los medios y la Marea Blanca exigiendo la inmediata dimisión del Gobierno. Periodistas acusando al Gobierno de ser cómplices de asesinato y todo. Ahora el Gobierno no tiene ninguna responsabilidad. Qué cosas.",
+            "Preguntas a [POLITICIAN] en la sesión de control al Gobierno mañana en el Congreso:. @user : “¿A quién defiende su Gobierno?”. @user : “¿Cree que el Gobierno hace todo lo posible por ayudar a la gente?”"
+        ]
+    },
+    {
+        "Topic":2,
+        "Count":219,
+        "Name":"2_gobierno_hoy_795_291",
+        "Representation":[
+            "gobierno",
+            "hoy",
+            "795",
+            "291",
+            "aprobó",
+            "impedía",
+            "diario",
+            "vulnerables",
+            "trasladar",
+            "corrupción"
+        ],
+        "Representative_Docs":[
+            "Hoy hace 948 días que el Gobierno [POLITICIAN] aprobó el Protocolo que impedía trasladar al hospital a los residentes más vulnerables. 7.291 murieron sin recibir atención médica (5.795 con covid). El @user no investiga. Ellos pasan, nosotros [HASHTAG] ¿Se lo recordamos a diario?",
+            "Hoy hace 1.028 días que el Gobierno [POLITICIAN] aprobó el Protocolo que impedía trasladar al hospital a los residentes más vulnerables. 7.291 murieron sin recibir atención médica (5.795 con covid). @user no investiga. Ellos pasan, nosotros . ¿Se lo recordamos a diario?",
+            "Hoy hace 1.054 días que el Gobierno [POLITICIAN] aprobó el Protocolo que impedía trasladar al hospital a los residentes más vulnerables. 7.291 murieron sin recibir atención médica (5.795 con covid). @user no investiga. Ellos pasan, nosotros . ¿Se lo recordamos a diario?"
+        ]
+    },
+    {
+        "Topic":3,
+        "Count":193,
+        "Name":"3_hoy_gobierno_españa_año",
+        "Representation":[
+            "hoy",
+            "gobierno",
+            "españa",
+            "año",
+            "nuevo",
+            "millones",
+            "historia",
+            "compromiso",
+            "futuro",
+            "gracias"
+        ],
+        "Representative_Docs":[
+            "[HASHTAG] es una de las 5 CCAA con menos impuestos. Y ya preparamos una nueva rebaja fiscal y más medidas para quitar burocracia.. El objetivo es crear buen clima para la economía y el empleo. Gracias a @user por más de 30 años de apuesta por el Campo de Gibraltar.",
+            "En 2023, [HASHTAG] seguirá siendo una región con identidad, estabilidad, compromiso con España y visión de futuro. Feliz año nuevo.",
+            "Este año la [HASHTAG] contará con los mayores presupuestos de su historia, casi 6.000 millones de euros.. Muy pronto aprobaremos el techo de gasto para hacer frente a la crisis económica y social.. La prioridad son las personas y garantizar el estado del bienestar."
+        ]
+    },
+    {
+        "Topic":4,
+        "Count":46,
+        "Name":"4_partido_constitucional_ahora_congreso",
+        "Representation":[
+            "partido",
+            "constitucional",
+            "ahora",
+            "congreso",
+            "señalamiento",
+            "llega",
+            "ser",
+            "auténtica",
+            "separatistas",
+            "asume"
+        ],
+        "Representative_Docs":[
+            "El [POLITICAL_PARTY] ha llegado al extremo de poner precio al cumplimiento de la Constitución, tras 4 años sin cumplirla. Ahora dicen que si queremos que la cumplan, tenemos que darles lo que quieran. Esto es chantaje constitucional y una auténtica barbaridad democrática.",
+            "El [POLITICAL_PARTY] amenaza a la cúpula del CGPJ: \"Que se olviden de cualquier ascenso si nombran las vacantes del Constitucional\". \"Ningún juez llega al Supremo, al TC o a nombramientos similares sin el apoyo de un sector en el CGPJ\". Politizar la justicia es esto.",
+            "El [POLITICAL_PARTY] farda de ser el partido que apoya la libertad, pero parca libertad es esa si no tienes la mayor información posible sobre lo que decides.. Lo sabe cualquiera. Lo explicó Leibniz. Y lo ignora el [POLITICAL_PARTY] porque en vez de tener sentido común o lecturas filosóficas, tienen a Sémper."
+        ]
+    },
+    {
+        "Topic":5,
+        "Count":44,
+        "Name":"5_ley_año_hábil_ahora",
+        "Representation":[
+            "ley",
+            "año",
+            "hábil",
+            "ahora",
+            "moncloa",
+            "congreso",
+            "si",
+            "cgpj",
+            "según",
+            "democracia"
+        ],
+        "Representative_Docs":[
+            "Si el [POLITICAL_PARTY] deflacta IRPF, reduce o elimina impuestos para ayudar a la gente, según @user y el [POLITICAL_PARTY], quiebra el estado bienestar. Si lo copian en País Vasco, Valencia o ahora Canarias, es para combatir la inflación🤪. Deberían pedir perdón. Tienen locos a sus corifeos",
+            "Con el [POLITICAL_PARTY] la luz subió un 2% y la Secta mediática de izquierdas se rasgó las vestiduras: “la pobreza energética”. Los reportajes lacrimógenos de la gente con tres abrigos en casa sin calefacción eran habituales. Ahora q el precio se triplica todos ellos enmudecen. Los mercenarios",
+            "El [POLITICAL_PARTY] después de dar luz verde a la Ley Trans en el Consejo de Ministros, hoy dice que propondrá enmiendas para darle una vuelta a la ley. Es decir, el [POLITICAL_PARTY] contra los derechos trans y apoyando la guerra político-mediática de la derecha para desgastar al Min. de Igualdad."
+        ]
+    },
+    {
+        "Topic":6,
+        "Count":44,
+        "Name":"6_recuadro_mujeres_sevilla_sevillanos",
+        "Representation":[
+            "recuadro",
+            "mujeres",
+            "sevilla",
+            "sevillanos",
+            "puestecillos",
+            "borbolla",
+            "vejer",
+            "humos",
+            "fátima",
+            "vídeo"
+        ],
+        "Representative_Docs":[
+            "EL RECUADRO. \"Aquel Río Grande\". Sevilla recupera cada vez más y utiliza las orillas urbanas del río.",
+            "MENSAJE DE SOCORRO de RADIO NACIONAL para los gemelos Benavides. Que os di el número americano para el WhatsApp con dos cifras bailadas. A ver: or-ga-ni-za-ción. Donde dije 745 quise decir 475. Al resto, aunque no soy vuestro alcalde, os debo una explicación.👇",
+            "EL RECUADRO. \"Sevillanos sin humos\". Nos falta la Sevilla sin tíos que se dan humos, porque produzcan rechazo."
+        ]
+    },
+    {
+        "Topic":7,
+        "Count":38,
+        "Name":"7_pela_podemos_coalición_elija",
+        "Representation":[
+            "pela",
+            "podemos",
+            "coalición",
+            "elija",
+            "despoblación",
+            "universalidad",
+            "acomplejados",
+            "cuyos",
+            "ley",
+            "derecho"
+        ],
+        "Representative_Docs":[
+            "@user Tercera lección: tanto [POLITICAL_PARTY] como [POLITICAL_PARTY] han llevado en sus respectivos programas electorales volver al sistema anterior al 85 para que la judicatura elija a los 12 jueces y magistrados. Ambos incumplieron, incluido [POLITICIAN], que dijo que derogaría esta comodidad del bipartidismo",
+            "Robles ([POLITICAL_PARTY]): \"En su búsqueda de la universalidad, las Universidades medievales usaron el latín como lengua franca. [...] Desde el siglo XVIII, lenguas nacionales como el inglés y el español mantuvieron esa universalidad. Esta ley propiciará que clases e investigaciones se haga⬇️",
+            "@user \"[POLITICIAN], cercana a [POLITICAL_PARTY], cuyos integrantes negacionistas son imbéciles morales, siempre priorizó la hostelería sobre las vidas y muertes, y convirtió Madrid en la taberna de Europa. Su gestión de la pandemia ha sido tan suicida y negligente que raya en lo criminal\", Javier Marías."
+        ]
+    },
+    {
+        "Topic":8,
+        "Count":37,
+        "Name":"8_hoy_okupacion_gran_gracias",
+        "Representation":[
+            "hoy",
+            "okupacion",
+            "gran",
+            "gracias",
+            "1700",
+            "competitiva",
+            "agroalimentario",
+            "buen",
+            "concretamente",
+            "dedicación"
+        ],
+        "Representative_Docs":[
+            "❌[HASHTAG] desde @user seguimos trabajando contra la okupacion ilegal. @user . 1️⃣1️⃣2️⃣ Okupacion de la @user ,ejemplo de:. ❗️Atención a casos de okupacion. ❗️Coordinación con policia local. ❗️Asesoramiento legal a afectados. ❗️Inmediatez",
+            "Gracias, ministro @user por tu visita a [HASHTAG] y por tu apoyo a la unidad de la DOCa Rioja. Nuestra tierra está unida a su excelente producto agroalimentario y a vinos de gran prestigio internacional. Seguiremos promoviendo con [HASHTAG] la transformación de este sector",
+            "104 empresas representarán a la [HASHTAG] en @user  mostrando la fortaleza y potencial de nuestro sector agroalimentario. Un buen ejemplo de ello es The Natural Fruit Company, referente en la producción de limón. Hoy hemos visitado sus instalaciones."
+        ]
+    },
+    {
+        "Topic":9,
+        "Count":24,
+        "Name":"9_mujeres_delincuentes_selectivas_afirmó",
+        "Representation":[
+            "mujeres",
+            "delincuentes",
+            "selectivas",
+            "afirmó",
+            "violadores",
+            "dimitido",
+            "ganaderos",
+            "debería",
+            "dimitir",
+            "ley"
+        ],
+        "Representative_Docs":[
+            "Si [POLITICIAN], el [POLITICAL_PARTY] y El Mundo aplauden a Margarita Robles, en Ferraz debería sonar una alarma. Creo que en este casó sonó y por eso el Presidente tuvo que rectificarla quintando el foco de los cazas y la fragata y poniéndolo en la desescalada",
+            "[POLITICIAN] a [POLITICIAN]: \"Antes de dar lecciones, vengan ustedes lavados\". Lo dice él que por la Ley de su Ministra Irene, están saliendo de las cárceles violadores, agresores y pederastas. Él que se arrodilla ante delincuentes independentistas corruptos o [POLITICAL_PARTY]. [POLITICIAN], espabila!",
+            "[HASHTAG]. [POLITICIAN] afirmó sentirse \"orgulloso\" de la ley que beneficia a violadores y pederastas (ya son 60). I.[POLITICIAN] insultó a los jueces y afirmó que el T.Supremo tendría la ultima palabra. Ayer, habló el Supremo. Hoy, I. [POLITICIAN] debería dimitir o [POLITICIAN] debería cesarla"
+        ]
+    },
+    {
+        "Topic":10,
+        "Count":20,
+        "Name":"10_falleció_residente_oficio_recordamos",
+        "Representation":[
+            "falleció",
+            "residente",
+            "oficio",
+            "recordamos",
+            "murieron",
+            "investiga",
+            "pasan",
+            "diario",
+            "covid",
+            "derivados"
+        ],
+        "Representative_Docs":[
+            "Hoy hace 1.012 días que falleció el primer residente en Cataluña. En dos meses, con un Govern paralizado, murieron 2.797 con covid en su residencia sin ser derivados al hospital. @user no investiga de oficio. Ellos pasan, nosotros . ¿Se lo recordamos a diario?",
+            "Hoy hace 1.032 días que falleció el primer residente en Cataluña. En dos meses, con un Govern paralizado, murieron 2.797 con covid en su residencia sin ser derivados al hospital. @user no investiga de oficio. Ellos pasan, nosotros . ¿Se lo recordamos a diario?",
+            "Hoy hace 1001 días que falleció el primer residente en Cataluña. En dos meses, con un Govern paralizado, murieron 2.797 con covid en su residencia sin ser derivados al hospital. El @user no investiga de oficio. Ellos pasan, nosotros . ¿Se lo recordamos a diario?"
+        ]
+    },
+    {
+        "Topic":11,
+        "Count":20,
+        "Name":"11_cuánto_esconderlo_va_mata",
+        "Representation":[
+            "cuánto",
+            "esconderlo",
+            "va",
+            "mata",
+            "sabéis",
+            "financiación",
+            "jamás",
+            "votar",
+            "saben",
+            "señor"
+        ],
+        "Representative_Docs":[
+            "¿Sabéis que como a [POLITICIAN] le ha caído la del pulpo por votar en contra de las medidas anticrisis estos 3 años, ahora va a votar a favor o se va a abstener para redimirse? ¿Y sabéis que dice que son copias de sus medidas cuando nunca han propuesto nada? Así tiene la cara, así",
+            "¿Cómo se atreve [POLITICIAN] a dar lecciones tras arruinar España, destruir 3 millones de empleos, congelar las pensiones y bajar el sueldo a los funcionarios con el voto de [POLITICIAN]?. ¿Y cuánto cobra del dictador Maduro, que asesina y tortura disidentes en las cárceles según la ONU?",
+            "Ya saben qué es democracia para [POLITICIAN]: sus patronos asesinos y narcotraficantes que le mandaban “convolutos” de 450.000 USD, cárteles mexicanos y torturadores de Venezuela, Nica y Cuba y su gente del G2 para aterrorizar y asesinar. Chavez los trajo a sembrar crimen por España."
+        ]
+    },
+    {
+        "Topic":12,
+        "Count":16,
+        "Name":"12_derivados_falleció_residente_oficio",
+        "Representation":[
+            "derivados",
+            "falleció",
+            "residente",
+            "oficio",
+            "recordamos",
+            "murieron",
+            "mayores",
+            "investiga",
+            "pasan",
+            "hospital"
+        ],
+        "Representative_Docs":[
+            "Hoy hace 939 días que falleció el primer residente en Castilla y León. En dos meses, murieron 2.338 mayores con covid, más del 70% en su residencia sin ser derivados al hospital. El @user no investiga de oficio. Ellos pasan, nosotros . ¿Se lo recordamos a diario?",
+            "Hoy hace 1.028 días que falleció el primer residente en Castilla y León. En dos meses, murieron 2.338 mayores con covid, más del 70% en su residencia sin ser derivados al hospital. @user no investiga de oficio. Ellos pasan, nosotros . ¿Se lo recordamos a diario?",
+            "Hoy hace 1001 días que falleció el primer residente en Castilla y León. En dos meses, murieron 2.338 mayores con covid, más del 70% en su residencia sin ser derivados al hospital. El @user no investiga de oficio. Ellos pasan, nosotros [HASHTAG] ¿Se lo recordamos a diario?"
+        ]
+    },
+    {
+        "Topic":13,
+        "Count":11,
+        "Name":"13_dije_sabemos_nombre_abriría",
+        "Representation":[
+            "dije",
+            "sabemos",
+            "nombre",
+            "abriría",
+            "coloquen",
+            "graduado",
+            "castástrofe",
+            "dabais",
+            "malvada",
+            "puestecillo"
+        ],
+        "Representative_Docs":[
+            "@user Yo no he hablado en ningún momento del físico de [POLITICIAN]. Revisa mi tuit y date cuenta que ha sido tu mente sucia y tu mirada malvada que no sé cómo lo verá.",
+            "@user Yo es que no he valorado lo que dice [POLITICIAN]. Los interesados en establecer comparaciones de qué ha sido peor (o similares argumentos) suelen pretender justificar una conducta en otra, o disculpar una de las dos.",
+            "Todos sabemos que si le llegan a hacer algo parecido a [POLITICIAN] sería el tema de toda la semana, abriría los telediarios y todos los medios estarían exigiendo la ilegalización de [POLITICAL_PARTY]. Lo hace la gentuza de extrema izquierda y aquí no pasa nada. Es la puta guerra cultural."
+        ]
+    }
+]
