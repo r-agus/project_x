@@ -27,6 +27,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 most_common_words.csv
+roberta_gender
 
 
 # PyInstaller
