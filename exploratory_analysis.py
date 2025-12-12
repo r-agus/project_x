@@ -265,7 +265,7 @@ def generate_wordcloud(xtrain: pd.DataFrame):
     clean_words = [w for w in words if len(w) > 2 and w not in stopwords]
 
     unique_clean_words = set(clean_words)
-    print("Número total de palabras únicas (sin stopwords):", len(unique_clean_words))
+    print("Total number of unique words (without stopwords):", len(unique_clean_words))
 
 
     df_unique = pd.DataFrame(list(unique_clean_words), columns=["word"])
@@ -306,9 +306,12 @@ def generate_wordcloud(xtrain: pd.DataFrame):
     return wordcloud
 
 if __name__ == "__main__":
-    xtrain, ytrain, *_ = get_data_splits()
+    xtrain, ytrain, _, yval, _, ytest = get_data_splits()
     print(f"{'-' * 35}")
-    analyze_class_distribution(ytrain, generate_plots=True)
+    # concatenate y matrices to analyze all labels together
+    print_data_info(ytrain)
+    print(f"{'-' * 35}")
+    analyze_class_distribution(pd.concat([ytrain, yval, ytest], ignore_index=True), generate_plots=True)
     print(f"{'-' * 35}")
     # Print text length statistics (from tweets column, which corresponds to the last column)
     text_lengths = xtrain.dropna().apply(len)
